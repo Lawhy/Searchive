@@ -146,5 +146,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# History files
+.Rhistory
+.Rapp.history
+
 # End of https://www.gitignore.io/api/java,python,jupyternotebooks
 
