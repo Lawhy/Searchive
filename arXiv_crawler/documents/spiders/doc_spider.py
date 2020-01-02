@@ -18,7 +18,7 @@ class DogSpider(scrapy.Spider):
     name = "documents"
 
     def start_requests(self):
-        urls = gen_urls(1902)
+        urls = gen_urls(self.time)  # a extra argument passed into the spider
 
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
