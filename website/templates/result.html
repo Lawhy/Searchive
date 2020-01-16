@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+  {% for result in results %}
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          {% for author in result.authors %}
+          <a class="mr-2" href="#">{{ author }}</a>
+          {% endfor %}
+          <small class="text-muted" style="float:right;">20{{ result.id.split('.')[0][:2] }} {{ months[result.id.split('.')[0][2:]] }}</small>
+        </div>
+        <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ ' '.join(result.title) }}</a></h2>
+        <small class="text-muted">{{result.subjects[0]}}</small>
+        {% for subject in result.subjects[1:] %}
+        <small class="text-muted">{{subject}}</small>
+        {% endfor %}
+        <p class="article-content" lang="latex">Abstract:{{ ' '.join(result.abstract) }}</p>
+      </div>
+    </article>
+  {% endfor %}
+  <a href="#" class="previous">&laquo; Previous</a>
+  <a href="#" class="next">Next &raquo;</a>
+{% endblock content %}
+
+{% block sidebar %}
+<div class="col-md-4">
+  <div class="content-section">
+    <h3>Results Filter</h3>
+    <p class='text-muted'>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-light">Latest Posts</li>
+        <li class="list-group-item list-group-item-light">Announcements</li>
+        <li class="list-group-item list-group-item-light">Calendars</li>
+        <li class="list-group-item list-group-item-light">etc</li>
+      </ul>
+    </p>
+  </div>
+</div>
+{% endblock sidebar %}
