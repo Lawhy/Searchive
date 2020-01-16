@@ -1,13 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
+{% if startIndex + numberOfResultsPerPage <= numberOfResults %}
+<small class="text-muted">Showing {{startIndex + 1}} to {{startIndex + numberOfResultsPerPage}} of {{numberOfResults}}</small>
+{% else %}
+<small class="text-muted">Showing {{startIndex + 1}} to {{numberOfResults}} of {{numberOfResults}}</small>
+{% endif %}
+<small>
+  <table style="float:right;">
+    <tr>
+      <th>Show</th>
+      <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{10}}">10</a></th>
+      <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{20}}">20</a></th>
+      <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{50}}">50</a></th>
+      <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{100}}">100</a></th>
+    </tr>
+  </table>
+</small>
   {% for result in results %}
     <article class="media content-section">
       <div class="media-body">
         <div class="article-metadata">
           {% for author in result.authors %}
-          <a class="mr-2" href="#">{{ author }}</a>
+          <a class="mr-2" href="#">{{author}}</a>
           {% endfor %}
-          <small class="text-muted" style="float:right;">20{{ result.id.split('.')[0][:2] }} {{ months[result.id.split('.')[0][2:]] }}</small>
+          <small class="text-muted" style="float:right;">{{ datetime.datetime.strptime(result.id.split('.')[0],'%y%m').strftime("%Y %b") }}</small>
         </div>
         <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ ' '.join(result.title) }}</a></h2>
         <small class="text-muted">{{result.subjects[0]}}</small>
@@ -18,20 +34,25 @@
       </div>
     </article>
   {% endfor %}
-  <a href="#" class="previous">&laquo; Previous</a>
-  <a href="#" class="next">Next &raquo;</a>
+  {% if startIndex == 0 %}
+  {% else %}
+  <a href="?si={{startIndex - numberOfResultsPerPage}}" class="previous">&laquo; Previous</a>
+  {% endif %}
+  {% if startIndex >= (numberOfResults - numberOfResultsPerPage) %}
+  {% else %}
+  <a href="?si={{startIndex + numberOfResultsPerPage}}" class="next" style="float:right;">Next &raquo;</a>
+  {% endif %}
 {% endblock content %}
 
 {% block sidebar %}
 <div class="col-md-4">
   <div class="content-section">
     <h3>Results Filter</h3>
-    <p class='text-muted'>
       <ul class="list-group">
-        <li class="list-group-item list-group-item-light">Latest Posts</li>
-        <li class="list-group-item list-group-item-light">Announcements</li>
-        <li class="list-group-item list-group-item-light">Calendars</li>
-        <li class="list-group-item list-group-item-light">etc</li>
+        <li class="list-group-item list-group-item-light">Latest to Oldest</li>
+        <li class="list-group-item list-group-item-light">Oldest to Latest</li>
+        <li class="list-group-item list-group-item-light">By Authors</li>
+        <li class="list-group-item list-group-item-light">Alphabetical</li>
       </ul>
     </p>
   </div>
