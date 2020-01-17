@@ -20,23 +20,23 @@
 
     <meta charset="utf-8">
     {% if title %}
-      <title>? - {{ title }}</title>
+      <title>Searchive - {{ title }}</title>
     {% else %}
-      <title>?</title>
+      <title>Searchive</title>
     {% endif %}
   </head>
   <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="/">?</a>
+          <a class="navbar-brand mr-4" href="/">Searchive</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="/search">Search</a>
               <a class="nav-item nav-link" href="/about">About</a>
+              <a class="nav-item nav-link" href="/help">Help</a>
             </div>
             <!-- Navbar Right Side -->
             <!-- <div class="navbar-nav">
@@ -49,9 +49,7 @@
     </header>
     <main role="main" class="container">
       <div class="row">
-        <div class="col-md-8">
-          {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
         {% block sidebar %}{% endblock %}
       </div>
     </main>

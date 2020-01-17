@@ -8,9 +8,9 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@app.route('/search')
-def search():
-    return render_template('search.html')
+@app.route('/help')
+def help():
+    return render_template('help.html')
 
 @app.route('/result', methods=['GET'])
 def result():
@@ -19,6 +19,8 @@ def result():
     startIndex = 0
 
     numberOfResultsPerPage = 10
+
+    query = 'why are you geh'
 
     if request.args.get('si'):
         try:
@@ -32,10 +34,16 @@ def result():
         except:
             numberOfResultsPerPage = 10
 
+    if request.args.get('q'):
+        try:
+            query = request.args.get('q')
+        except:
+            query = 'why are you geh'
+
     numberOfResults = len(results)
 
     return render_template('result.html', datetime=dt, title='result', results=results[startIndex:startIndex+numberOfResultsPerPage]
-    , startIndex=startIndex, numberOfResultsPerPage=numberOfResultsPerPage, numberOfResults=numberOfResults)
+    , startIndex=startIndex, numberOfResultsPerPage=numberOfResultsPerPage, numberOfResults=numberOfResults, query=query)
 
 @app.route('/about')
 def about():

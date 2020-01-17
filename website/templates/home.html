@@ -1,4 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-  <img src="static/test.png">
+<div class="col-md-12">
+  <img src="static/searchive.png" class="center">
+  <form action="/result?q=">
+    <input type="text" name="q" class="center form-control form-rounded" style="width: 50%; margin-bottom: 20px;" value="{{query}}">
+    <input type="submit" value="Search" class="center btn btn-outline-secondary">
+  </form>
+</div>
 {% endblock content %}
