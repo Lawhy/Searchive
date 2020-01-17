@@ -15,10 +15,10 @@
     <table style="float:right;">
       <tr>
         <th>Show</th>
-        <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{10}}">10</a></th>
-        <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{20}}">20</a></th>
-        <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{50}}">50</a></th>
-        <th><a class="text-muted" style="float:right;" href="?si=0&rpp={{100}}">100</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{10}}">10</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{20}}">20</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{50}}">50</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{100}}">100</a></th>
       </tr>
     </table>
   </small>
@@ -55,7 +55,7 @@
       <tr>
         {% if startIndex == 0 %}
         {% else %}
-        <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="previous">&laquo; Previous</a></th>
+        <th><a href="?q={{query}}&si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="previous">&laquo; Previous</a></th>
         {% endif %}
         <!-- <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">1</a></th>
         <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">2</a></th>
@@ -63,25 +63,25 @@
         <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">4</a></th> -->
         {% if startIndex >= (numberOfResults - numberOfResultsPerPage) %}
         {% else %}
-        <th><a href="?si={{startIndex + numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="next" style="float:right;">Next &raquo;</a></th>
+        <th><a href="?q={{query}}&si={{startIndex + numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="next" style="float:right;">Next &raquo;</a></th>
         {% endif %}
       </tr>
     </table>
     <p></p>
-  {% endblock content %}
+  </div>
+{% endblock content %}
 
-  {% block sidebar %}
-  <div class="col-md-4">
-    <div class="content-section">
-      <h3>Results Filter</h3>
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-light">Latest to Oldest</li>
-          <li class="list-group-item list-group-item-light">Oldest to Latest</li>
-          <li class="list-group-item list-group-item-light">By Authors</li>
-          <li class="list-group-item list-group-item-light">Alphabetical</li>
-        </ul>
-      </p>
-    </div>
+{% block sidebar %}
+<div class="col-md-4">
+  <div class="content-section">
+    <h3>Results Filter</h3>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-light">Latest to Oldest</li>
+        <li class="list-group-item list-group-item-light">Oldest to Latest</li>
+        <li class="list-group-item list-group-item-light">By Authors</li>
+        <li class="list-group-item list-group-item-light">Alphabetical</li>
+      </ul>
+    </p>
   </div>
 </div>
 {% endblock sidebar %}

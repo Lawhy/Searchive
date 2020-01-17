@@ -20,7 +20,7 @@ def result():
 
     numberOfResultsPerPage = 10
 
-    query = 'why are you geh'
+    query = 'deep learning'
 
     if request.args.get('si'):
         try:
@@ -38,7 +38,7 @@ def result():
         try:
             query = request.args.get('q')
         except:
-            query = 'why are you geh'
+            query = 'deep learning'
 
     numberOfResults = len(results)
 
