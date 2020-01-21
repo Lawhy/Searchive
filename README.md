@@ -1,7 +1,8 @@
 # search-engine
-TTDS coursework 3
+TTDS coursework 3 
 
-1. Link to data: https://drive.google.com/open?id=1T8EJ3_5EpNiGH5ggbPhZrLmPMzOMqtMe
+1. Link to data: https://drive.google.com/open?id=1T8EJ3_5EpNiGH5ggbPhZrLmPMzOMqtMe <br>
+Link to glove embeddings: http://nlp.stanford.edu/data/glove.6B.zip
 * Please use the 'preprocessed' version of data, each file an ordered dict in json format, a data sample is:
 ```r
 # format:
@@ -15,4 +16,6 @@ TTDS coursework 3
 ...
 }
 ```
-
+2. Testing
+* To test the application you need to create a folder called data in the same directory "search-engine" is in.
+In data folder you need to get two create two files: test.json and glove.6B.50d.txt
