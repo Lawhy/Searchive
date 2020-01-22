@@ -6,6 +6,12 @@
     <input type="submit" value="Search" style="float:right;">
   </form>
   <br>
+  {% if correction %}
+    <a>Showing results for <a href="/result?q={{correction}}">{{correction}}</a></a>
+    <br>
+    <small>Search instead for <a href="/result?q={{query}}">{{query}}</small>
+    <br>
+  {% endif %}
   {% if startIndex + numberOfResultsPerPage <= numberOfResults %}
   <small class="text-muted">Showing {{startIndex + 1}} to {{startIndex + numberOfResultsPerPage}} of {{numberOfResults}}</small>
   {% else %}
