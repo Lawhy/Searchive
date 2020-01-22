@@ -26,4 +26,4 @@ In data folder you need to get two create two files: test.json and glove.6B.50d.
 * Title Search (title)
 * Author Search (author)
 * Abstract Search (abs + subjs)
-* Note that subjects can serve as a filter of search
+   ##### Note that *subjects* can serve as a filter of search
