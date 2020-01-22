@@ -1,7 +1,6 @@
 import re
 import json
-import pickle
-from dicttoxml import dicttoxml
+from collections import OrderedDict
 
 class ArxivPreprocessor:
 
@@ -12,6 +11,9 @@ class ArxivPreprocessor:
 
     def get_id(self, i):
         return self.dict[i]['id']
+
+    def get_authors(self, i):
+        return self.dict[i]['authors']
 
     def get_title(self, i):
         return self.dict[i]['title'][0].replace('\n', '').strip()
@@ -33,23 +35,27 @@ class ArxivPreprocessor:
         for i in range(self.size):
             result[self.get_id(i)] = {
                 'title': self.get_title(i),
+                'authors': self.get_authors(i),
                 'abs': self.get_abs(i),
                 '1st_subj': self.get_1st_subj(i),
                 'subjs': self.get_subjs(i)
             }
-        return result
+        return OrderedDict(sorted(result.items(), key=lambda x: x[0]))
 
     @classmethod
     def read_subj(cls, subj):
         return re.findall('(.+) \((.+)\)', subj)[0]
 
 
-a = ArxivPreprocessor('../../data', "1901")
-# print(a.get_title(11))
-# print(a.get_1st_subj(11))
-# print(a.get_subjs(11))
-result = a.preprocess()
-print(type(result))
-print(result['1901.00003'])
-with open('1901.json', 'w+') as f:
-    json.dump(result, f)
+if __name__ == '__main__':
+    for year in ['14', '15', '16', '17', '18', '19']:
+        for i in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']:
+            name = year + i
+            a = ArxivPreprocessor('D:\\UOE\\arXiv_data\\raw\\20' + year, name)
+            # print(a.get_title(11))
+            # print(a.get_1st_subj(11))
+            # print(a.get_subjs(11))
+            result = a.preprocess()
+            print(len(result), 'documents...')
+            with open('D:\\UOE\\arXiv_data\\preprocessed\\20' + year + '\\' + name + '.json', 'w+') as f:
+                json.dump(result, f)
