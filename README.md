@@ -10,6 +10,7 @@ Link to glove embeddings: http://nlp.stanford.edu/data/glove.6B.zip
 # example:
 {
 "1901.00001": {"title": "some text ...", 
+               "authors": ["author1", ...]
                "abs": "some text ...", 
                "1st_subj": {"cs.CV": "Computer Vision and Pattern Recognition"}, 
                "subjs": {"cs.CV": "Computer Vision and Pattern Recognition", "cs.LG": "Machine Learning", "stat.ML": "Machine Learning"}}},
@@ -19,3 +20,10 @@ Link to glove embeddings: http://nlp.stanford.edu/data/glove.6B.zip
 2. Testing
 * To test the application you need to create a folder called data in the same directory "search-engine" is in.
 In data folder you need to get two create two files: test.json and glove.6B.50d.txt
+
+3. Search Types
+* General Search (title + author + abs + subjs)
+* Title Search (title)
+* Author Search (author)
+* Abstract Search (abs + subjs)
+* Note that subjects can serve as a filter of search
