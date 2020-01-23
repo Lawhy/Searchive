@@ -6,10 +6,14 @@ import numpy as np
 from scipy import spatial
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
+from spellchecker import SpellChecker
 
 app = Flask(__name__)
 
 embeddings_dict = {}
+
+spell = SpellChecker()
+
 with open("../../data/glove.6B.50d.txt", 'r') as f:
     for line in f:
         values = line.split()
@@ -43,6 +47,12 @@ def result():
         query = request.args.get('q')
         if not query.strip():
             return redirect('/')
+        else:
+            misspelled = spell.unknown(query.strip().split())
+            if len(misspelled) != 0:
+                correction = ' '.join([spell.correction(word) for word in query.strip().split()])
+            else:
+                correction = None
     except:
         return redirect('/')
 
@@ -51,11 +61,11 @@ def result():
     # if len(query.split()) <= 5:
     #     closest_words = {}
     #     for idx, word in enumerate(query.split()):
-    #         closest_words[idx] = find_closest_embeddings(embeddings_dict[word])[1]
+    #         closest_words[idx] = find_closest_embeddings(embeddings_dict[word])[1:10]
     #     print(closest_words)
 
     return render_template('result.html', datetime=dt, title='result', results=results[startIndex:startIndex+numberOfResultsPerPage]
-    , startIndex=startIndex, numberOfResultsPerPage=numberOfResultsPerPage, numberOfResults=numberOfResults, query=query)
+    , startIndex=startIndex, numberOfResultsPerPage=numberOfResultsPerPage, numberOfResults=numberOfResults, query=query, correction=correction)
 
 @app.route('/about')
 def about():
