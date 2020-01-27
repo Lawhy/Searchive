@@ -8,6 +8,7 @@ from nltk.stem import *
 from nltk.corpus import stopwords
 
 
+
 def read(filepath):
     with open(filepath, "r") as f:
         text = f.read()
@@ -17,10 +18,13 @@ def read(filepath):
 
 def parse(json_text):
     word_dict={}
+    bm25_dict={}
     text = json.loads(json_text)
+    bm25_dict["sum_doc"]=len(list(text.keys()))
     for key in text.keys():
         doc_id = key    #string
         abstract = text[key]["abs"]
+        bm25_dict[doc_id]=len(abstract)
         """ preprocessing """
         tokenised_text = re.findall("\w+",abstract)  # split on all the non-letter words, keep the words consisting of numbers or/and letters
         lowered_text = [w.lower() for w in tokenised_text]  # case folding
@@ -33,6 +37,7 @@ def parse(json_text):
 
 
         """ create the positional inverted index """
+
         for pos, word in enumerate(stemmed_text):
             if word not in word_dict:
                 word_dict[word] = {}
@@ -54,7 +59,7 @@ def parse(json_text):
                 else:
                     word_dict[word]["docdict"][doc_id]["pos"].append(pos + 1)
                     word_dict[word]["docdict"][doc_id]["tf"] = word_dict[word]["docdict"][doc_id]["tf"]  + 1
-    return word_dict
+    return word_dict, bm25_dict
 
 def write(filepath,word_dict):
     #np.save(filepath,word_dict)
@@ -80,7 +85,7 @@ def write(filepath,word_dict):
 start_time = time.time()
 text = read("/afs/inf.ed.ac.uk/user/s18/s1891132/Downloads/1901.json")
 stopwords= set(stopwords.words('english'))
-index_dict= parse(text)
+index_dict, bm25_dict= parse(text)
 #sorted_word_dict = collections.OrderedDict(sorted(index_dict.items()))
 write("/afs/inf.ed.ac.uk/user/s18/s1891132/Downloads/index.json",index_dict)
 print("--- %s seconds ---" % (time.time() - start_time))
