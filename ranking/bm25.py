@@ -21,41 +21,42 @@ def get_query(filepath_query):
     stemmer = PorterStemmer()
     stemmed_text = [stemmer.stem(word) for word in stopped_text]  # stemming
     return stemmed_text
-    
-def score_cal(df,tf):
-    if df != 0 and tf != 0:
-        w = (1 + math.log(float(tf),10))*math.log(5000/float(df),10)
-        return w
-    else:
-        return 0
-    
-def rank(filepath_query,json_text):
-    query_stem = get_query(filepath_query)
-    rank_dict = {}
+
+def bm25_rank(filepath_query, json_text):
+    k1 = 2
+    b = 0.75
+    bm25_dict = {}
+    detail = read(filepath2)
     text = json.loads(json_text)
-    total_score = 0
+    avg_docs = detail["avg_doc"]
     query_no = 1000
-    for word in query_stem:
+    query = get_query(filepath_query)
+    total_score = 0
+    for word in query:
         if word in text.keys():
             df = text[word]["df"]
+            idf = math.log((detail["sum_doc"]-float(df)+0.5)/(float(df)+0.5),10)
             score = 0
             for keys in text[word]["docdict"].keys():
+                len_doc = detail[keys]
                 tf = text[word]["docdict"][keys]["tf"]
-                score += score_cal(df,tf)
-        total_score += score
+                score += float(tf*(k1+1))/float(tf+k1*(1-b+b*float(len_doc)/float(avg_docs)))
+        total_score = idf*score
     print("query: %f total_score: %f" % query_no, total_score)
-    rank_dict[query_no] = total_score
+    bm25_dict[query_no] = total_score
 
 def write(filepath,rank_dict):
     with open(filepath,"w") as f_wrindex:
          json.dump(rank_dict,f_wrindex)
     f_wrindex.close()
-
-query = get_query(filepath_query)
+    
 start_time = time.time()
 text = read(filepath)
-rank_dict = rank(text)
-write(filepath,rank_dict)
+bm25_dict = bm25_rank(text)
+write(filepath3,rank_dict)
 print("--- %s seconds ---" % (time.time() - start_time))
 
+# bm25_dict = {"sum_doc":???,"doc_id 1":length,"doc_id 2": length}
+
 # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
+        
