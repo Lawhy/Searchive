@@ -21,10 +21,12 @@ def parse(json_text):
     bm25_dict={}
     text = json.loads(json_text)
     bm25_dict["sum_doc"]=len(list(text.keys()))
+    sum_word = 0.0
     for key in text.keys():
         doc_id = key    #string
         abstract = text[key]["abs"]
         bm25_dict[doc_id]=len(abstract)
+        sum_word = len(abstract) + sum_word
         """ preprocessing """
         tokenised_text = re.findall("\w+",abstract)  # split on all the non-letter words, keep the words consisting of numbers or/and letters
         lowered_text = [w.lower() for w in tokenised_text]  # case folding
@@ -59,6 +61,7 @@ def parse(json_text):
                 else:
                     word_dict[word]["docdict"][doc_id]["pos"].append(pos + 1)
                     word_dict[word]["docdict"][doc_id]["tf"] = word_dict[word]["docdict"][doc_id]["tf"]  + 1
+    bm25_dict["avg_doc"]=sum_word/bm25_dict["sum_doc"]
     return word_dict, bm25_dict
 
 def write(filepath,word_dict):
