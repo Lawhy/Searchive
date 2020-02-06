@@ -34,22 +34,55 @@ def search(query):
     term = preprocess_squery(query)[0]
     i = 0
     query_list = []
-
     while i < len_of_query:
         query_list.append(term_search(term[i]))
         i += 1
 
     query_docid = set(query_list[0])
     for value in iter(query_list[1:]):
-        query_docid = query_docid.intersection(value)
+        query_docid = query_docid.union(value) #.intersection(value)
 
     return query_docid
 
+# phrase search--2 terms
+def phrase_search(search_phrase):
+    len_of_query = preprocess_squery(search_phrase)[1]
+    term = preprocess_squery(search_phrase)[0]
+    t1 = set(term_search(term[0]))
+    t2 = set(term_search(term[1]))
+    term_ids = list(t1 & t2)
+
+    i = 0
+    IDs1 = readindex(file_path).get(term[0]).get('docdict')
+    IDs2 = readindex(file_path).get(term[1]).get('docdict')
+    print(IDs1)
+    print(IDs2)
+    IDt1t2 = []
+
+    while i < term_ids.__len__():
+        posi1 = IDs1.get(term_ids[i])['pos']
+        posi2 = IDs2.get(term_ids[i])['pos']
+        m = 0
+        n = 0
+        while m < posi1.__len__():
+            while n < posi2.__len__():
+                if (int(posi2[n]) - int(posi1[m]) == 1):
+                    IDt1t2.append(term_ids[i])
+                n += 1
+            m += 1
+        i += 1
+    return IDt1t2
+
+
 file_path = '/Users/mac/Downloads/index1901.json'
 text = readindex(file_path)
+
 search_query = "effective energy density"
+preprotext = preprocess_squery(search_query)[0]
 print(search(search_query))
 
+search_phrase = "effective energy"
+print(phrase_search(search_phrase))
 
 # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
 
