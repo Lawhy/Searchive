@@ -2,9 +2,6 @@ import json
 import math
 import search
 
-from nltk.stem import *
-from nltk.corpus import stopwords
-
 docid_set = search.query_docid
 query = search.preprotext
 

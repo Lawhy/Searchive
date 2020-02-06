@@ -2,9 +2,6 @@ import json
 import math
 import search
 
-from nltk.stem import *
-from nltk.corpus import stopwords
-
 docid_set = search.query_docid
 query = search.preprotext
 
@@ -41,5 +38,5 @@ def write(filepath,rank_dict):
 text = read(filepath)
 dict_w = rank(query,text)
 dict_w_sort = sorted(dict_w,key = lambda x:x[1], reverse = True)
-write(filepath,dict_w_sort)
+write(filepath2,dict_w_sort)
 # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
