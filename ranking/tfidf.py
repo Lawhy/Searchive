@@ -6,8 +6,9 @@ docid_set = search.query_docid
 query = search.preprotext
 
 def read(file):
-    with open(filepath,"r") as f:
-        text = f.read()
+    with open(file,"r") as f:
+        text_1 = f.read()
+        text = json.loads(text_1)
         f.close()
     return text
 
@@ -17,6 +18,7 @@ def rank(query_word,text):
     for docid in docid_set:
         for term in query_word:
             df = text[term]["df"]
+            #print(text[term]["df"])
             tf = text[term]["docdict"][docid]["tf"]
             score = score + score_cal(df,tf)
         dict_weight.append((docid,score))
@@ -35,8 +37,8 @@ def write(filepath,rank_dict):
          json.dump(rank_dict,f_wrindex)
     f_wrindex.close()
 
-text = read(filepath)
+text = read('/afs/inf.ed.ac.uk/user/s19/s1926829/TTDS/test/index1901.json')
 dict_w = rank(query,text)
 dict_w_sort = sorted(dict_w,key = lambda x:x[1], reverse = True)
-write(filepath2,dict_w_sort)
+print(dict_w_sort)
 # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
