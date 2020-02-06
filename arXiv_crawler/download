@@ -1,0 +1,5 @@
+for i in 1212 1209 1208 1207 1206 1205 1204 1203 1202 1201
+do
+scrapy crawl documents -a time=$i -o ../../data/$i.json
+sleep 2000
+done
