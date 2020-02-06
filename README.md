@@ -44,7 +44,7 @@ In data folder you need to get two create two files: test.json and glove.6B.50d.
 * Title Search (title)
 * Author Search (author)
 * Abstract Search (abs + subjs)
-* Fuzzy Search
+* ~~Fuzzy Search~~
    ##### Note that *subjects* can serve as a filter of search
 5. Language Model for Similarity Search 
 6. Spelling Correction
