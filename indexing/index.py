@@ -65,6 +65,7 @@ def init_index(doc_id, text, ref):
 def initialise(directory):
     """
   Initialise index
+  index start from 0
   """
     normaliser = Normaliser()
     abs_colle_ref = db.collection('abstract')
@@ -79,6 +80,7 @@ def initialise(directory):
     total_abs_word = 0
 
     for filename in os.listdir(directory):
+        print(os.listdir(directory))
         text = read(filename)
         for key in text.keys():
             doc_total = doc_total + 1
@@ -100,44 +102,99 @@ def initialise(directory):
 
     abs_param_ref.set(
         {
-            'total doc number': doc_total,
-            'total document length': total_abs_word
+            'total_doc_number': doc_total,
+            'total_document_length': total_abs_word
         }
     )
 
     title_param_ref.set(
         {
-            'total doc number': doc_total,
-            'total document length': total_title_word
+            'total_doc_number': doc_total,
+            'total_document_length': total_title_word
         }
     )
 
     return
 
 
+def delete_word_index(ref, old_text, doc_id):
+    for word in old_text:
+        word_doc_ref = ref.document(word)
+        word_doc_ref.update({
+            doc_id: firestore.DELETE_FIELD,
+            "df": firestore.Increment(-1)
+        })
+    return
+
+
 def update(oldfile, newfile):
     normaliser = Normaliser()
+
+    abs_colle_ref = db.collection('abstract')
+    title_colle_ref = db.collection('title')
+    abs_param_ref = db.collection('param').document("abstract")
+    title_param_ref = db.collection('param').document("title")
+
     old_text = read(oldfile)
     new_text = read(newfile)
+
+    title_len_diff_sum = 0
+    abs_len_diff_sum = 0
+
     for key in old_text.keys():
+        """every single docuement"""
         doc_id = key.replace(".", "-")
+        print(doc_id)
         old_abstract = normaliser.normalise_text(old_text[key]["abs"])
         old_title = normaliser.normalise_text(old_text[key]["title"])
         new_abstract = normaliser.normalise_text(new_text[key]["abs"])
         new_title = normaliser.normalise_text(new_text[key]["title"])
 
-        title_to_update = set(old_title).union(new_title)
-        abs_to_update = set(old_abstract).union(new_abstract)
+        """record parameter"""
 
-        title_to_delete = set(title_to_update).difference(new_title)
-        abs_to_delete = set(abs_to_update).difference(new_abstract)
+        title_len_diff = int(len(new_title) - len(old_title))
+        abs_len_diff = int(len(new_abstract) - len(old_abstract))
+        title_len_diff_sum = title_len_diff_sum + title_len_diff
+        abs_len_diff_sum = abs_len_diff_sum + abs_len_diff
 
-        # scan again and add other elements
 
-        # title_to_add = set(title_to_update).difference(old_title)
-        # abs_to_add = set(abs_to_update).difference(old_abstract)
+        """delete word in old text"""
+        delete_word_index(title_colle_ref, old_title, doc_id)
+        delete_word_index(abs_colle_ref, old_abstract, doc_id)
+
+        """init word in new text"""
+        init_index(doc_id, new_title, title_colle_ref)
+        init_index(doc_id, new_abstract, abs_colle_ref)
+
+
+    """update total document length"""
+
+    title_param_ref.update({
+        'total_document_length' : firestore.Increment(title_len_diff_sum)
+    })
+
+    abs_param_ref.update({
+        'total_document_length': firestore.Increment(abs_len_diff_sum)
+    })
+
+    # origin_title_total_length = title_param_ref.get(field_paths={'total document length'}).to_dict()
+    # origin_abs_total_length = abs_param_ref.get(field_paths={'total document length'}).to_dict()
+    #
+    # new_title_total_length = int(origin_title_total_length["total document length"]) + title_len_diff_sum
+    # new_abs_total_length = int(origin_abs_total_length["total document length"]) + abs_len_diff_sum
+    #
+    # title_param_ref.update({
+    #         'total document length': new_title_total_length
+    #     })
+    #
+    #
+    # abs_param_ref.update({
+    #     'total document length': new_abs_total_length
+    # })
+
 
     return
 
 
-initialise("/Users/AlisonLee/Desktop/ttds_initial_data")
+initialise("/Users/AlisonLee/Desktop/ttdsdata/")
+update("/Users/AlisonLee/Desktop/190101.json","/Users/AlisonLee/Desktop/190101new.json")
