@@ -20,21 +20,35 @@ e.g. https://arxiv.org/abs/1901.00001 <br>
 ...
 }
 ```
+2. Import Our Own Modules
+```r
+# example to use the Normaliser class in normalise.py in the folder preprocess 
+import sys
+sys.path.append('..')  # append the main directory path
+from preprocess.normalise import Normaliser
+```
+To use the Normaliser, simply:
+```r
+norm = Normaliser()
+...
+# get tokens from the raw text
+clean_text = norm.normalise_text(text)
+```
 
-2. Testing
+3. Testing
 * To test the application you need to create a folder called data in the same directory "search-engine" is in.
 In data folder you need to get two create two files: test.json and glove.6B.50d.txt
 
-3. Search Types
+4. Search Types
 * General Search (title + author + abs + subjs)
 * Title Search (title)
 * Author Search (author)
 * Abstract Search (abs + subjs)
-* Fuzzy Search
+* ~~Fuzzy Search~~
    ##### Note that *subjects* can serve as a filter of search
-4. Language Model for Similarity Search 
-5. Spelling Correction
-6. ...
+5. Language Model for Similarity Search 
+6. Spelling Correction
+7. ...
 
 --------------------
 ### Email from Walid:
