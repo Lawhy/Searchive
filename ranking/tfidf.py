@@ -1,6 +1,7 @@
 import json
 import math
 import search
+import collections
 
 docid_set = search.query_docid
 query = search.preprotext
@@ -32,6 +33,16 @@ def score_cal(df,tf):
     else:
         return 0
 
+def search_for_detail(dict_w_sort):
+    dict_result = collections.OrderedDict()
+    for each_list in dict_w_sort:
+        doc_id = int(float(each_list[0]))
+        filepath = '/afs/inf.ed.ac.uk/user/s19/s1926829/TTDS/test/' + str(doc_id) + '.json'
+        dict_1901 = read(filepath)
+        dict_result[each_list[0]] = dict_1901[each_list[0]]
+        dict_result[each_list[0]]['score'] = each_list[1]
+    return dict_result
+  
 def write(filepath,rank_dict):
     with open(filepath,"w") as f_wrindex:
          json.dump(rank_dict,f_wrindex)
@@ -41,4 +52,6 @@ text = read('/afs/inf.ed.ac.uk/user/s19/s1926829/TTDS/test/index1901.json')
 dict_w = rank(query,text)
 dict_w_sort = sorted(dict_w,key = lambda x:x[1], reverse = True)
 print(dict_w_sort)
+dict_result = search_for_detail(dict_w_sort)
+write('/afs/inf.ed.ac.uk/user/s19/s1926829/TTDS/test/rank_tfidf_1901_detail.json',dict_result)
 # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
