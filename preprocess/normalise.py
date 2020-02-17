@@ -39,3 +39,7 @@ class Normaliser:
             if tok:
                 result.append(tok)
         return result
+
+    def normalise_author(self, author):
+        if self.lower_case:
+            return author.lower()
