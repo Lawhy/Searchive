@@ -54,3 +54,5 @@ In data folder you need to get two create two files: test.json and glove.6B.50d.
 ### Email from Walid:
 You are not allowed to use search engine libraries that does index or search. 
 However, you are allowed to use libraries for secondary features, such as autocomplete or spelling correction.
+
+### pip install firebase_admin
