@@ -56,6 +56,6 @@ You are not allowed to use search engine libraries that does index or search.
 However, you are allowed to use libraries for secondary features, such as autocomplete or spelling correction.
 
 ### To successfully run firestore
-Do not use DICE! (you don't have root access)
-pip install firebase_admin
-download the json public key file shared in the groupchat
+* Do not use DICE! (you don't have root access)
+* pip install firebase_admin
+* Download the json public key file shared in the groupchat
