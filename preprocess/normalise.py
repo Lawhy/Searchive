@@ -18,12 +18,12 @@ class Normaliser:
             text = text.replace(sent, '')
         return text
 
-    def normalise_token(self, token):
+    def normalise_token(self, token, stopping=True, stemming=True):
         if self.lower_case:
             token = token.lower()
-        if token in self.stop_words:
+        if token in self.stop_words and stopping:
             return None
-        if self.stemmer:
+        if self.stemmer and stemming:
             token = self.stemmer.stem(token)
         return token
 
@@ -36,6 +36,27 @@ class Normaliser:
         for tok in toks:
             tok = self.normalise_token(tok)
             # incase None
+            if tok:
+                result.append(tok)
+        return result
+
+    def normalise_author(self, author):
+        """normalise a author term (for searching)"""
+        toks = re.findall(r'\w+', author)
+        result = []
+        for tok in toks:
+            tok = tok.lower()
+            if tok:
+                result.append(tok)
+        return result
+
+    def normalise_authors(self, list_authors):
+        """normalise a list of authors (for indexing)"""
+        authors = ' '.join(list_authors)
+        toks = re.findall(r'\w+', authors)
+        result = []
+        for tok in toks:
+            tok = tok.lower()
             if tok:
                 result.append(tok)
         return result

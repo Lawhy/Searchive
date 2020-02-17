@@ -13,9 +13,13 @@ firebase_admin.initialize_app(cred, {
 db = firestore.client()
 
 
+"""
+mode = 'abstract' / 'title' / 'author'/ 'param'
 
-def read_index(word):
-    doc_ref = db.collection("abstract").document(word)
+"""
+
+def read_index(word, mode):
+    doc_ref = db.collection(mode).document(word)
     try:
         doc = doc_ref.get()
         doc_dict = doc.to_dict()
@@ -23,3 +27,11 @@ def read_index(word):
     except google.cloud.exceptions.NotFound:
         print('No such word in index file!')
     return doc_dict
+
+
+
+
+
+    return param_dict
+
+
