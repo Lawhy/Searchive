@@ -2,9 +2,10 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from normalise import Normaliser
+import os
+
 
 import json
-import os
 
 """
 Initialise firebase service
@@ -62,43 +63,48 @@ def init_index(doc_id, text, ref):
     return word_cnt
 
 
-def initialise(directory):
+def initialise(filename):
     """
   Initialise index
   index start from 0
   """
     normaliser = Normaliser()
+
     abs_colle_ref = db.collection('abstract')
     title_colle_ref = db.collection('title')
+    author_colle_ref = db.collection('author')
+
     abs_param_ref = db.collection('param').document("abstract")
     title_param_ref = db.collection('param').document("title")
-
-    # TODO: author
+    author_param_ref = db.collection('param').document("author")
 
     doc_total = 0
     total_title_word = 0
     total_abs_word = 0
+    total_author_word = 0
 
-    for filename in os.listdir(directory):
-        print(os.listdir(directory))
-        text = read(filename)
-        for key in text.keys():
-            doc_total = doc_total + 1
-            doc_id = key.replace(".", "-")
-            abstract = normaliser.normalise_text(text[key]["abs"])
-            title = normaliser.normalise_text(text[key]["title"])
 
-            # TODO : author
+    text = read(filename)
 
-            """creating index"""
+    for key in text.keys():
+        doc_total = doc_total + 1
+        doc_id = key.replace(".", "-")
+        abstract = normaliser.normalise_text(text[key]["abs"])
+        title = normaliser.normalise_text(text[key]["title"])
+        author = normaliser.normalise_authors(text[key]["authors"])
 
-            file_title_cnt = init_index(doc_id, title, title_colle_ref)
-            file_abs_cnt = init_index(doc_id, abstract, abs_colle_ref)
-            total_abs_word = total_abs_word + file_abs_cnt
-            total_title_word = total_title_word + file_title_cnt
 
-            if doc_total > 3:
-                break
+
+
+        """creating index"""
+
+        file_title_cnt = init_index(doc_id, title, title_colle_ref)
+        file_abs_cnt = init_index(doc_id, abstract, abs_colle_ref)
+        file_author_cnt = init_index(doc_id, author, author_colle_ref)
+        total_abs_word = total_abs_word + file_abs_cnt
+        total_title_word = total_title_word + file_title_cnt
+        total_author_word = total_author_word + file_author_cnt
+
 
     abs_param_ref.set(
         {
@@ -114,6 +120,12 @@ def initialise(directory):
         }
     )
 
+    author_param_ref.set(
+        {
+            'total_doc_number': doc_total,
+            'total_document_length': total_author_word
+        }
+    )
     return
 
 
@@ -128,18 +140,23 @@ def delete_word_index(ref, old_text, doc_id):
 
 
 def update(oldfile, newfile):
+
+    # TODO author
     normaliser = Normaliser()
 
     abs_colle_ref = db.collection('abstract')
     title_colle_ref = db.collection('title')
+    author_colle_ref = db.collection('author')
     abs_param_ref = db.collection('param').document("abstract")
     title_param_ref = db.collection('param').document("title")
+    author_param_ref = db.collection('param').document("author")
 
     old_text = read(oldfile)
     new_text = read(newfile)
 
     title_len_diff_sum = 0
     abs_len_diff_sum = 0
+    author_len_diff_sum = 0
 
     for key in old_text.keys():
         """every single docuement"""
@@ -147,24 +164,32 @@ def update(oldfile, newfile):
         print(doc_id)
         old_abstract = normaliser.normalise_text(old_text[key]["abs"])
         old_title = normaliser.normalise_text(old_text[key]["title"])
+        old_author = normaliser.normalise_authors(old_text[key]["authors"])
+
         new_abstract = normaliser.normalise_text(new_text[key]["abs"])
         new_title = normaliser.normalise_text(new_text[key]["title"])
+        new_author = normaliser.normalise_authors(new_text[key]["authors"])
 
         """record parameter"""
 
         title_len_diff = int(len(new_title) - len(old_title))
         abs_len_diff = int(len(new_abstract) - len(old_abstract))
+        author_len_diff = int(len(new_author) - len(old_author))
+
         title_len_diff_sum = title_len_diff_sum + title_len_diff
         abs_len_diff_sum = abs_len_diff_sum + abs_len_diff
+        author_len_diff_sum = author_len_diff_sum + author_len_diff
 
 
         """delete word in old text"""
         delete_word_index(title_colle_ref, old_title, doc_id)
         delete_word_index(abs_colle_ref, old_abstract, doc_id)
+        delete_word_index(author_colle_ref, old_author, doc_id)
 
         """init word in new text"""
         init_index(doc_id, new_title, title_colle_ref)
         init_index(doc_id, new_abstract, abs_colle_ref)
+        init_index(doc_id,new_author, author_colle_ref)
 
 
     """update total document length"""
@@ -175,6 +200,10 @@ def update(oldfile, newfile):
 
     abs_param_ref.update({
         'total_document_length': firestore.Increment(abs_len_diff_sum)
+    })
+
+    author_param_ref.update({
+        'total_document_length': firestore.Increment(author_len_diff_sum)
     })
 
     # origin_title_total_length = title_param_ref.get(field_paths={'total document length'}).to_dict()
@@ -196,5 +225,13 @@ def update(oldfile, newfile):
     return
 
 
-initialise("/Users/AlisonLee/Desktop/ttdsdata/")
-update("/Users/AlisonLee/Desktop/190101.json","/Users/AlisonLee/Desktop/190101new.json")
+# path = "/Users/AlisonLee/Desktop/ttdsdata"
+# for dir in os.listdir(path):
+#     if(dir != ".DS_Store"):
+#         for file in os.listdir(path+"/"+dir):
+#             print(file)
+#             initialise(file)
+
+#update("/Users/AlisonLee/Desktop/190101.json","/Users/AlisonLee/Desktop/190101new.json")
+
+initialise("/Users/AlisonLee/Desktop/ttdsdata/2015/1501.json")
