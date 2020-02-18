@@ -1,13 +1,10 @@
 import math
-import collections
 import sys
 import json
 
 sys.path.append('..')  # append the main directory path
 from search.search import mode_select, preprocess_squery
 from indexing.readindex import read_index
-#import search.search
-#import indexing.readindex
 
 def read(filepath):
     with open(filepath,'r') as f:
@@ -47,7 +44,6 @@ def rank(query,mode):
 def search_for_detail(raw_query,mode="abstract"):
     query = preprocess_squery(raw_query)
     dict_final = rank(query,mode)
-    dict_result = collections.OrderedDict()
     result_list = []
     for each_list in dict_final:
         dict_result_temp = {}
@@ -56,6 +52,7 @@ def search_for_detail(raw_query,mode="abstract"):
         filepath = '../data/' + str(doc_id) + '.json'
         dict_1907 = read(filepath)
         dict_result_temp = dict_1907[doc_id_p]
+        dict_result_temp["id"] = doc_id_p
         dict_result_temp['score'] = each_list[1]
         result_list.append(dict_result_temp)
-    return dict_result
+    return result_list
