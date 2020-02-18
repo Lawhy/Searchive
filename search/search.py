@@ -42,7 +42,7 @@ def term_search(term,mode):
     # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
     # return posi_list
     docid_list = []
-    term_dic = readindex.read_index(term,mode)
+    term_dic = read_index(term,mode)
     docid = term_dic.keys()
     for item in docid:
         if item != 'df':
@@ -74,8 +74,8 @@ def phrase_search(search_phrase,mode):
     # {'1901-00001': {'pos': [59], 'tf': 1}, 'df': 1}
     IDtftl = [] # doc_id contains the first and last word
 
-    term_dic_f = readindex.read_index(term[0], mode)
-    term_dic_l = readindex.read_index(term[-1], mode)
+    term_dic_f = read_index(term[0], mode)
+    term_dic_l = read_index(term[-1], mode)
 
     for docid in term_ids:
         posif = term_dic_f.get(docid)['pos']
@@ -93,8 +93,8 @@ def phrase_search(search_phrase,mode):
         for id_query in IDtftl:
             i = 1
             while i < len_of_query - 1:
-                posif = readindex.read_index(term[i-1], mode).get(id_query)['pos']
-                posil = readindex.read_index(term[i], mode).get(id_query)['pos']
+                posif = read_index(term[i-1], mode).get(id_query)['pos']
+                posil = read_index(term[i], mode).get(id_query)['pos']
                 m = 0
                 n = 0
                 while m < posif.__len__():
