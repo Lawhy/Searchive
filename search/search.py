@@ -8,7 +8,7 @@ import sys
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
 from indexing.readindex import read_index
-# import readindex
+# from readindex import read_index
 # from normalise import Normaliser
 
 def readfile(file_path):
@@ -20,7 +20,6 @@ def readfile(file_path):
 
 '''preprocess search query'''
 def preprocess_squery(query,mode):
-
     # tokenised_text = re.findall("\w+",query)  # split on all the non-letter words, keep the words consisting of numbers or/and letters
     # lowered_text = [w.lower() for w in tokenised_text]  # case folding
     # stopped_text = [word for word in lowered_text if word not in stopwords.words('english')]  # remove stop words
@@ -32,8 +31,8 @@ def preprocess_squery(query,mode):
     else:
     # get tokens from the raw text
         clean_text = norm.normalise_text(query)
-    len_of_query = clean_text.__len__()
-    return clean_text,len_of_query
+
+    return clean_text  #,len_of_query
 
 def term_search(term,mode):
     # posi_list = []
@@ -43,30 +42,45 @@ def term_search(term,mode):
     # return posi_list
     docid_list = []
     term_dic = read_index(term,mode)
-    docid = term_dic.keys()
-    for item in docid:
-        if item != 'df':
-            docid_list.append(item)
-    return docid_list
+    if term_dic == None: #term is not in index
+        return '0'
+
+    else :
+        docid = term_dic.keys()
+        for item in docid:
+            if item != 'df':
+                docid_list.append(item)
+        return docid_list
 
 '''   query search   '''
 def query_search(query,mode):
-    len_of_query = preprocess_squery(query,mode)[1]
-    term = preprocess_squery(query,mode)[0]
+    # len_of_query = preprocess_squery(query,mode)[1]
+    # term = preprocess_squery(query,mode)
+
+    term = preprocess_squery(query, mode)
+    len_of_query = term.__len__()
     i = 0
     query_list = []
     while i < len_of_query:
-        query_list.append(term_search(term[i],mode))
-        i += 1
+        if term_search(term[i],mode) == '0':
+            i += 1
+        else:
+            query_list.append(term_search(term[i],mode))
+            i += 1
     query_docid = set(query_list[0])
     for value in iter(query_list[1:]):
         query_docid = query_docid.union(value) #.intersection(value)
-    return query_docid
+    if query_docid.__len__() == 0:
+        return 'None'
+    else:
+        return query_docid
 
 ''' phrase search--n terms '''
 def phrase_search(search_phrase,mode):
-    len_of_query = preprocess_squery(search_phrase,mode)[1]
-    term = preprocess_squery(search_phrase,mode)[0]
+    # len_of_query = preprocess_squery(search_phrase,mode)[1]
+    term = preprocess_squery(search_phrase,mode)
+    len_of_query = term.__len__()
+
     t1 = set(term_search(term[0],mode))
     t2 = set(term_search(term[-1],mode))
     term_ids = list(t1 & t2)
@@ -108,28 +122,30 @@ def phrase_search(search_phrase,mode):
                 i += 1
     else:
         docid_phrase = IDtftl
+    query_docid = set(docid_phrase)
 
-    return set(docid_phrase)
+    if query_docid.__len__() == 0:
+        return 'None'
+    else:
+        return query_docid
+    # return query_docid
 
 def mode_select(query,mode):
     if query[0]=='\"' and query[-1] == '\"':
-        query = search_phrase
         query_docid = phrase_search(query, mode)
-        return query_docid
     else:
-        query = search_query
         query_docid = query_search(query,mode)
-        return query_docid
+    return query_docid
 
 
 # '''test'''
 # search_query = "effective energy density"
 # mode = 'abstract'  #mode = 'abstract' / 'title' / 'author'/ 'param'
 # search_phrase = "\"forcing mechanisms allow attributing\""
-
-# preprotext = preprocess_squery(search_query,mode)[0]
-# query_docid = query_search(search_query,mode)
+# search_test = "computer science"
+#
+# print(preprocess_squery(search_test,mode))
 # phrase_search(search_phrase,mode)
-
-
-
+# print(phrase_search(search_test,mode))
+# print(mode_select(search_query,mode))
+#
