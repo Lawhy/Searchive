@@ -7,9 +7,9 @@ from nltk.corpus import stopwords
 import sys
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
-import indexing.readindex
+from indexing.readindex import read_index
+# import readindex
 # from normalise import Normaliser
-
 
 def readfile(file_path):
     with open(file_path, "r") as f:
@@ -49,6 +49,7 @@ def term_search(term,mode):
             docid_list.append(item)
     return docid_list
 
+'''   query search   '''
 def query_search(query,mode):
     len_of_query = preprocess_squery(query,mode)[1]
     term = preprocess_squery(query,mode)[0]
@@ -62,7 +63,7 @@ def query_search(query,mode):
         query_docid = query_docid.union(value) #.intersection(value)
     return query_docid
 
-# phrase search--n terms
+''' phrase search--n terms '''
 def phrase_search(search_phrase,mode):
     len_of_query = preprocess_squery(search_phrase,mode)[1]
     term = preprocess_squery(search_phrase,mode)[0]
@@ -71,8 +72,6 @@ def phrase_search(search_phrase,mode):
     term_ids = list(t1 & t2)
     i = 0
     # {'1901-00001': {'pos': [59], 'tf': 1}, 'df': 1}
-    # {word: {"df": xx, "docdict": {doc_id 1: {"tf": yy, "pos": [postlist]}, doc_id 2}}}
-
     IDtftl = [] # doc_id contains the first and last word
 
     term_dic_f = readindex.read_index(term[0], mode)
@@ -112,19 +111,25 @@ def phrase_search(search_phrase,mode):
 
     return set(docid_phrase)
 
-search_query = "effective energy density"
-mode = 'abstract'
-#mode = 'abstract' / 'title' / 'author'/ 'param'
+def mode_select(query,mode):
+    if query[0]=='\"' and query[-1] == '\"':
+        query = search_phrase
+        query_docid = phrase_search(query, mode)
+        return query_docid
+    else:
+        query = search_query
+        query_docid = query_search(query,mode)
+        return query_docid
 
 
-preprotext = preprocess_squery(search_query,mode)[0]
-query_docid = query_search(search_query,mode)
+# '''test'''
+# search_query = "effective energy density"
+# mode = 'abstract'  #mode = 'abstract' / 'title' / 'author'/ 'param'
+# search_phrase = "\"forcing mechanisms allow attributing\""
+
+# preprotext = preprocess_squery(search_query,mode)[0]
+# query_docid = query_search(search_query,mode)
+# phrase_search(search_phrase,mode)
 
 
-search_phrase = "forcing mechanisms allow attributing"
-
-# print(term_search('effect',mode))
-# print(query_docid)
-# print(phrase_search(search_phrase,mode))
-#
 
