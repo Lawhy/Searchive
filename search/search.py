@@ -11,6 +11,7 @@ from indexing.readindex import read_index
 # from readindex import read_index
 # from normalise import Normaliser
 
+'''      read json file      '''
 def readfile(file_path):
     with open(file_path, "r") as f:
         text_t = f.read()
@@ -32,13 +33,13 @@ def preprocess_squery(query,mode):
     # get tokens from the raw text
         clean_text = norm.normalise_text(query)
 
-    return clean_text  #,len_of_query
+    return clean_text  #len_of_query
 
+'''    term search   '''
 def term_search(term,mode):
     # posi_list = []
     # if readindex(file_path).__contains__(term):
     #     posi_list = list(text[term]['docdict'].keys())
-    # {word : {"df": xx, "docdict":{doc_id 1:{"tf": yy, "pos": [postlist]} , doc_id 2}}}
     # return posi_list
     docid_list = []
     term_dic = read_index(term,mode)
@@ -54,8 +55,6 @@ def term_search(term,mode):
 
 '''   query search   '''
 def query_search(query,mode):
-    # len_of_query = preprocess_squery(query,mode)[1]
-    # term = preprocess_squery(query,mode)
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
@@ -84,6 +83,7 @@ def phrase_search(search_phrase,mode):
     t1 = set(term_search(term[0],mode))
     t2 = set(term_search(term[-1],mode))
     term_ids = list(t1 & t2)
+
     i = 0
     # {'1901-00001': {'pos': [59], 'tf': 1}, 'df': 1}
     IDtftl = [] # doc_id contains the first and last word
@@ -137,15 +137,13 @@ def mode_select(query,mode):
         query_docid = query_search(query,mode)
     return query_docid
 
-
+#
 # '''test'''
 # search_query = "effective energy density"
 # mode = 'abstract'  #mode = 'abstract' / 'title' / 'author'/ 'param'
 # search_phrase = "\"forcing mechanisms allow attributing\""
-# search_test = "computer science"
+# search_test = "science computer"
 #
-# print(preprocess_squery(search_test,mode))
-# phrase_search(search_phrase,mode)
 # print(phrase_search(search_test,mode))
-# print(mode_select(search_query,mode))
-#
+# print(mode_select(search_test,mode))
+
