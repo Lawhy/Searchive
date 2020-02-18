@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 from flask import Flask, render_template, url_for, request, redirect
 import datetime as dt
 import json
@@ -7,6 +9,7 @@ from scipy import spatial
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from spellchecker import SpellChecker
+from ranking.tfidf_test import search_for_detail
 
 app = Flask(__name__)
 
@@ -31,7 +34,7 @@ def help():
 
 @app.route('/result', methods=['GET'])
 def result():
-    results = getResult(1)
+    results = getResult('robust model')
 
     try:
         startIndex = int(request.args.get('si'))
@@ -72,8 +75,7 @@ def about():
     return render_template('about.html')
 
 def getResult(q):
-    with open('../../data/test.json') as f:
-        data = json.load(f)
+    data = search_for_detail(q)
     return data
 
 def find_closest_embeddings(embedding):
