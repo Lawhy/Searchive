@@ -10,6 +10,14 @@ sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
 # from normalise import Normaliser
 
+
+def readfile(file_path):
+    with open(file_path, "r") as f:
+        text_t = f.read()
+        text = json.loads(text_t)
+        f.close()
+    return text #type dict
+
 '''preprocess search query'''
 def preprocess_squery(query,mode):
 
@@ -81,25 +89,40 @@ def phrase_search(search_phrase,mode):
                     IDtftl.append(term_ids[i])
                 n += 1
             m += 1
+    docid_phrase = []
+    if len_of_query > 2:
+        for id_query in IDtftl:
+            i = 1
+            while i < len_of_query - 1:
+                posif = readindex.read_index(term[i-1], mode).get(id_query)['pos']
+                posil = readindex.read_index(term[i], mode).get(id_query)['pos']
+                m = 0
+                n = 0
+                while m < posif.__len__():
+                    while n < posil.__len__():
+                        if (int(posil[n]) - int(posif[m]) == 1):
+                            docid_phrase.append(id_query)
+                        n += 1
+                    m += 1
+                i += 1
+    else:
+        docid_phrase = IDtftl
 
-    # docid_phrase = []
-    # if len_of_query > 2:
-    #     for docid in IDtftl:
-    #         posif = term_dic_f.get(docid)['pos']
-    #         posil = readindex.read_index(term[1], mode).get(docid)['pos']
-
-    return IDtftl
+    return set(docid_phrase)
 
 search_query = "effective energy density"
 mode = 'abstract'
-# mode = 'abstract' / 'title' / 'author'/ 'param'
-# print(term_search('effect',mode))
+#mode = 'abstract' / 'title' / 'author'/ 'param'
+
 
 preprotext = preprocess_squery(search_query,mode)[0]
 query_docid = query_search(search_query,mode)
-# print(query_docid)
 
-search_phrase = "subsequent decline despite"
+
+search_phrase = "forcing mechanisms allow attributing"
+#
+# print(term_search('effect',mode))
+# print(query_docid)
 # print(phrase_search(search_phrase,mode))
 
 
