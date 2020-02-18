@@ -5,9 +5,9 @@ from nltk.stem import *
 from nltk.corpus import stopwords
 
 import sys
-import readindex
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
+import indexing.readindex
 # from normalise import Normaliser
 
 
@@ -100,7 +100,9 @@ def phrase_search(search_phrase,mode):
                 n = 0
                 while m < posif.__len__():
                     while n < posil.__len__():
-                        if (int(posil[n]) - int(posif[m]) == 1):
+                        if (int(posil[n]) - int(posif[m]) != 1):
+                            break
+                        else:
                             docid_phrase.append(id_query)
                         n += 1
                     m += 1
@@ -120,9 +122,9 @@ query_docid = query_search(search_query,mode)
 
 
 search_phrase = "forcing mechanisms allow attributing"
-#
+
 # print(term_search('effect',mode))
 # print(query_docid)
 # print(phrase_search(search_phrase,mode))
-
+#
 
