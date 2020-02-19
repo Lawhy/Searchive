@@ -145,8 +145,6 @@ def initialise(filename):
 
     for key in text.keys():
 
-        if(doc_total>10):
-            break
 
 
         doc_total = doc_total + 1
