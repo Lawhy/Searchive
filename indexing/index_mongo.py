@@ -17,6 +17,7 @@ def read(filepath):
     return text
 
 
+# Deprecated
 def init_index_delta(doc_id, text, ref):
     word_cnt = 0
     for pos, word in enumerate(text):
@@ -29,7 +30,7 @@ def init_index_delta(doc_id, text, ref):
                     doc_id: {
                         'tf': 1,
                         'pos': [pos],
-                        'prevpos': pos  # TODO
+                        'prevpos': pos
                     }
                 }
             )
@@ -64,6 +65,18 @@ def init_index_delta(doc_id, text, ref):
     return word_cnt
 
 
+def delete_word_index(ref, old_text, doc_id):
+    print(old_text)
+    for word in old_text:
+        tf_decre = ref.find_one({"_id": word})[doc_id]["tf"]
+        ref.update_one({"_id": word},
+            {'$unset':
+                 {
+                    doc_id : 1
+                 },
+                '$inc': {"df" : -tf_decre}
+        })
+    return
 
 def init_index(doc_id, text, ref):
 
@@ -126,7 +139,7 @@ def initialise(filename):
 
 
     for key in text.keys():
-        if(doc_total>1):
+        if(doc_total>10):
             break
 
         doc_total = doc_total + 1
@@ -189,7 +202,99 @@ def initialise(filename):
     return
 
 
+def update(oldfile, newfile):
+
+    normaliser = Normaliser()
+
+    abs_colle_ref = db['abstract']
+    title_colle_ref = db['title']
+    author_colle_ref = db['author']
+
+    param_ref = db['param']
+
+    old_text = read(oldfile)
+    new_text = read(newfile)
+
+    title_len_diff_sum = 0
+    abs_len_diff_sum = 0
+    author_len_diff_sum = 0
+
+    for key in old_text.keys():
+        """every single docuement"""
+        doc_id = key.replace(".", "-")
+        print(doc_id)
+        old_abstract = normaliser.normalise_text(old_text[key]["abs"])
+        old_title = normaliser.normalise_text(old_text[key]["title"])
+        old_author = normaliser.normalise_authors(old_text[key]["authors"])
+        old_subjs = list(old_text[key]["subjs"].values())
+        for sub in old_subjs:
+            sub = normaliser.normalise_text(sub)
+            old_abstract.extend(sub)
+
+        new_abstract = normaliser.normalise_text(new_text[key]["abs"])
+        new_title = normaliser.normalise_text(new_text[key]["title"])
+        new_author = normaliser.normalise_authors(new_text[key]["authors"])
+        new_subjs = list(new_text[key]["subjs"].values())
+        for sub in new_subjs:
+            sub = normaliser.normalise_text(sub)
+            new_abstract.extend(sub)
+
+        """record parameter"""
+
+        title_len_diff = int(len(new_title) - len(old_title))
+        abs_len_diff = int(len(new_abstract) - len(old_abstract))
+        author_len_diff = int(len(new_author) - len(old_author))
+
+        title_len_diff_sum = title_len_diff_sum + title_len_diff
+        abs_len_diff_sum = abs_len_diff_sum + abs_len_diff
+        author_len_diff_sum = author_len_diff_sum + author_len_diff
 
 
-initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
+        """delete word in old text"""
+        delete_word_index(title_colle_ref, old_title, doc_id)
+        delete_word_index(abs_colle_ref, old_abstract, doc_id)
+        delete_word_index(author_colle_ref, old_author, doc_id)
 
+        """init word in new text"""
+        init_index(doc_id, new_title, title_colle_ref)
+        init_index(doc_id, new_abstract, abs_colle_ref)
+        init_index(doc_id, new_author, author_colle_ref)
+
+
+    """update total document length"""
+
+    param_ref.update_one(
+        {'_id': 'abstract'},
+
+        {'$inc': {
+            'total_document_length': abs_len_diff_sum
+        }
+        }
+    )
+
+    param_ref.update_one(
+        {'_id': 'title'},
+
+        {'$inc': {
+            'total_document_length': title_len_diff_sum
+        }
+        }
+    )
+
+    param_ref.update_one(
+        {'_id': 'author'},
+
+        {'$inc': {
+            'total_document_length': author_len_diff_sum
+        }
+        }
+    )
+
+
+    return
+
+
+
+"""customise the filepath yourself"""
+#initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
+delete_word_index(db["title"],["binari"],"1601-00007")
