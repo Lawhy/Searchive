@@ -42,6 +42,7 @@ def term_search(term,mode):
     #     posi_list = list(text[term]['docdict'].keys())
     # return posi_list
     docid_list = []
+
     term_dic = read_index(term,mode)
     if term_dic == None: #term is not in index
         return '0'
@@ -61,7 +62,7 @@ def query_search(query,mode):
     i = 0
     query_list = []
     while i < len_of_query:
-        if term_search(term[i],mode) == '0':
+        if term_search(term[i] , mode) == '0':
             i += 1
         else:
             query_list.append(term_search(term[i],mode))
@@ -145,7 +146,7 @@ def mode_select(query,mode):
             query_docid_abs = query_search(query,'abstract')
             query_docid_title = query_search(query, 'title')
             query_docid_author = query_search(query, 'author')
-        query_docid = query_docid_abs.union(query_docid_title)
+        query_docid = query_docid_abs.union(query_docid_title , query_docid_author)
     else:
         if query[0]=='\"' and query[-1] == '\"':
             query_docid = phrase_search(query, mode)
@@ -155,12 +156,12 @@ def mode_select(query,mode):
 
 
 
-
+#
 # '''test'''
 # search_query = "effective energy density"
 # mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
 # search_phrase = "\"computer science\""
-# search_query= "computer dhuchsdu hduhcjzch"
+# search_query= "science"
 #
 # print(mode_select(search_phrase,mode))
 # print(mode_select(search_query,'abstract'))
