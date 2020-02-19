@@ -46,7 +46,7 @@ def rank(raw_query,query,mode):
         return dict_tfidf_sort
 
 def search_for_detail(raw_query,mode="abstract"):
-    query,_ = preprocess_squery(raw_query,mode)
+    query = preprocess_squery(raw_query,mode)
     dict_final = rank(raw_query,query,mode)
     if dict_final == 'None':
         return []
