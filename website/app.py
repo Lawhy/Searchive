@@ -3,7 +3,7 @@ sys.path.append('..')
 from flask import Flask, render_template, url_for, request, redirect
 import datetime as dt
 import json
-import torch
+# import torch
 import numpy as np
 from scipy import spatial
 import matplotlib.pyplot as plt
