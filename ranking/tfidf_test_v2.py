@@ -29,8 +29,12 @@ def rank(raw_query,query,mode):
         tfidf_score = 0
         for docid in docid_set:
             for term in query:
-                dict_term = read_index(term, mode)
-                df = dict_term["df"]
+                if read_index(term,mode) != None:
+                    dict_term = read_index(term, mode)
+                    df = dict_term["df"]
+                else:
+                    df = 0
+                    
                 if docid in dict_term.keys():
                     tf = dict_term[docid]['tf']
                 else:
