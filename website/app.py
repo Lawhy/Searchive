@@ -59,6 +59,8 @@ def result():
 
     results = getResult(query)
 
+    print(query)
+
     numberOfResults = len(results)
 
     # if len(query.split()) <= 5:
