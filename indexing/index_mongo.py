@@ -1,6 +1,5 @@
 import pymongo
 from normalise import Normaliser
-import os
 
 import json
 import time
@@ -66,7 +65,6 @@ def init_index_delta(doc_id, text, ref):
 
 
 def delete_word_index(ref, old_text, doc_id):
-    print(old_text)
     for word in old_text:
         tf_decre = ref.find_one({"_id": word})[doc_id]["tf"]
         ref.update_one({"_id": word},
@@ -139,8 +137,7 @@ def initialise(filename):
 
 
     for key in text.keys():
-        if(doc_total>10):
-            break
+
 
         doc_total = doc_total + 1
         doc_id = key.replace(".", "-")
@@ -153,8 +150,6 @@ def initialise(filename):
         for sub in subjs:
             sub = normaliser.normalise_text(sub)
             abstract.extend(sub)
-        # 还差update
-
 
         """creating index"""
         file_title_cnt = init_index(doc_id, title, title_colle_ref)
@@ -297,6 +292,5 @@ def update(oldfile, newfile):
 
 """customise the filepath yourself"""
 initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
-
 #update(old_file_path, new_file_path)
-#delete_word_index(db["title"],["binari"],"1601-00007")
+
