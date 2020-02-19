@@ -137,13 +137,16 @@ def mode_select(query,mode):
         query_docid = query_search(query,mode)
     return query_docid
 
-#
+
+
+
 # '''test'''
 # search_query = "effective energy density"
 # mode = 'abstract'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-# search_phrase = "\"forcing mechanisms allow attributing\""
-# search_test = "science computer"
+# search_phrase = "\"computer science\""
+# search_query= "computer science"
 #
-# print(phrase_search(search_test,mode))
-# print(mode_select(search_test,mode))
+# print(mode_select(search_phrase,mode))
+# print(mode_select(search_query,mode))
+
 
