@@ -66,13 +66,18 @@ def query_search(query,mode):
         else:
             query_list.append(term_search(term[i],mode))
             i += 1
-    query_docid = set(query_list[0])
-    for value in iter(query_list[1:]):
-        query_docid = query_docid.union(value) #.intersection(value)
-    if query_docid.__len__() == 0:
-        return 'None'
+    #print(query_list.__len__())
+    if query_list.__len__() > 0:
+        query_docid = set(query_list[0])
+        for value in iter(query_list[1:]):
+            query_docid = query_docid.union(value)  # .intersection(value)
+        if query_docid.__len__() == 0:
+            return 'None'
+        else:
+            return query_docid
     else:
-        return query_docid
+        return 'None'
+
 
 ''' phrase search--n terms '''
 def phrase_search(search_phrase,mode):
@@ -131,10 +136,21 @@ def phrase_search(search_phrase,mode):
     # return query_docid
 
 def mode_select(query,mode):
-    if query[0]=='\"' and query[-1] == '\"':
-        query_docid = phrase_search(query, mode)
+    if mode == 'general':
+        if query[0]=='\"' and query[-1] == '\"':
+            query_docid_abs = phrase_search(query, 'abstract')
+            query_docid_title = phrase_search(query, 'title')
+            query_docid_author = phrase_search(query, 'author')
+        else:
+            query_docid_abs = query_search(query,'abstract')
+            query_docid_title = query_search(query, 'title')
+            query_docid_author = query_search(query, 'author')
+        query_docid = query_docid_abs.union(query_docid_title)
     else:
-        query_docid = query_search(query,mode)
+        if query[0]=='\"' and query[-1] == '\"':
+            query_docid = phrase_search(query, mode)
+        else:
+            query_docid = query_search(query,mode)
     return query_docid
 
 
@@ -142,11 +158,9 @@ def mode_select(query,mode):
 
 # '''test'''
 # search_query = "effective energy density"
-# mode = 'abstract'  #mode = 'abstract' / 'title' / 'author'/ 'param'
+# mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
 # search_phrase = "\"computer science\""
-# search_query= "computer science"
+# search_query= "computer dhuchsdu hduhcjzch"
 #
 # print(mode_select(search_phrase,mode))
-# print(mode_select(search_query,mode))
-
-
+# print(mode_select(search_query,'abstract'))
