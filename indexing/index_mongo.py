@@ -71,9 +71,11 @@ def init_index(doc_id, text, ref):
     for pos, word in enumerate(text):
         word_cnt = word_cnt + 1
 
+
         if ref.count_documents({ "_id": word}) > 0:
-           """the word exists in the collection"""
-           ref.update_one({"_id": word},
+            """the word exists in the collection"""
+
+            ref.update_one({"_id": word},
                                    {'$inc':{
                                        'df': 1,
                                         doc_id + '.tf': 1
@@ -85,6 +87,7 @@ def init_index(doc_id, text, ref):
 
         else:
             """the word appears for the first time"""
+
             ref.insert_one(
                 {
                     '_id': word,
@@ -96,7 +99,7 @@ def init_index(doc_id, text, ref):
                     }
                 }
             )
-        return word_cnt
+    return word_cnt
 
 
 def initialise(filename):
@@ -123,16 +126,22 @@ def initialise(filename):
 
 
     for key in text.keys():
-
-        if(doc_total>10):
+        if(doc_total>1):
             break
 
         doc_total = doc_total + 1
         doc_id = key.replace(".", "-")
         print(doc_id)
+
         abstract = normaliser.normalise_text(text[key]["abs"])
         title = normaliser.normalise_text(text[key]["title"])
         author = normaliser.normalise_authors(text[key]["authors"])
+        subjs = list(text[key]["subjs"].values())
+        for sub in subjs:
+            sub = normaliser.normalise_text(sub)
+            abstract.extend(sub)
+        # 还差update
+
 
         """creating index"""
         file_title_cnt = init_index(doc_id, title, title_colle_ref)
