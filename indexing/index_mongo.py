@@ -21,9 +21,6 @@ def init_index_delta(doc_id, text, ref):
     word_cnt = 0
     for pos, word in enumerate(text):
         word_cnt = word_cnt + 1
-        print("hey",ref.count_documents({ "_id": word, doc_id:{"$exists": True}}))
-        print("you", ref.count_documents({ "_id": word}))
-
         if (ref.count_documents({ "_id": word}) == 0):
             ref.insert_one(
                 {
@@ -147,29 +144,43 @@ def initialise(filename):
 
 
 
-    # param_ref.insert_many( #TODO update
-    #     [
-    #         {
-    #             '_id': 'abstract',
-    #             'total_doc_number': doc_total,
-    #             'total_document_length': total_abs_word
-    #          },
-    #         {
-    #             '_id': 'title',
-    #             'total_doc_number': doc_total,
-    #             'total_document_length': total_title_word
-    #         },
-    #         {
-    #             '_id': 'author',
-    #             'total_doc_number': doc_total,
-    #             'total_document_length': total_author_word
-    #         }
-    #     ]
-    # )
+
+    param_ref.update_one(
+                {'_id': 'abstract'},
+
+                {'$inc': {
+                    'total_doc_number': doc_total,
+                    'total_document_length': total_abs_word
+                }
+            }
+    )
+
+    param_ref.update_one(
+        {'_id': 'title'},
+
+        {'$inc': {
+            'total_doc_number': doc_total,
+            'total_document_length': total_title_word
+        }
+        }
+    )
+
+    param_ref.update_one(
+        {'_id': 'author'},
+
+        {'$inc': {
+            'total_doc_number': doc_total,
+            'total_document_length': total_author_word
+        }
+        }
+    )
 
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return
+
+
+
 
 initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
 
