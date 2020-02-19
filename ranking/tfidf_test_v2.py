@@ -1,6 +1,7 @@
 import math
 import sys
 import json
+import time
 
 sys.path.append('..')  # append the main directory path
 from search.search import mode_select, preprocess_squery
@@ -46,12 +47,18 @@ def rank(raw_query,query,mode):
         return dict_tfidf_sort
 
 def search_for_detail(raw_query,mode="abstract"):
+    start_time1 = time.time()
     query = preprocess_squery(raw_query,mode)
+    print("--- preprocess the query: %s seconds ---" % (time.time() - start_time1))
+    start_time2 = time.time()
     dict_final = rank(raw_query,query,mode)
+    print("--- ranking process: %s seconds ---" % (time.time() - start_time2))
+    
     if dict_final == 'None':
         return []
     else:
         result_list = []
+        start_time3 = time.time()
         for each_list in dict_final:
             dict_result_temp = {}
             doc_id_p = each_list[0].replace('-','.')
@@ -62,4 +69,5 @@ def search_for_detail(raw_query,mode="abstract"):
             dict_result_temp["id"] = doc_id_p
             dict_result_temp['score'] = each_list[1]
             result_list.append(dict_result_temp)
+        print("--- search for detail: %s seconds ---" % (time.time() - start_time3))
         return result_list
