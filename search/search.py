@@ -163,8 +163,4 @@ def mode_select(query,mode):
 # search_query= "computer dhuchsdu hduhcjzch"
 #
 # print(mode_select(search_phrase,mode))
-<<<<<<< HEAD
 # print(mode_select(search_query,'abstract'))
-=======
-# print(mode_select(search_query,mode))
->>>>>>> 9218416336628e3e2f0b6450340ece3de43aa5cd
