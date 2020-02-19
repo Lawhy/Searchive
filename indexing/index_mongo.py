@@ -296,5 +296,7 @@ def update(oldfile, newfile):
 
 
 """customise the filepath yourself"""
-#initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
-delete_word_index(db["title"],["binari"],"1601-00007")
+initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
+
+#update(old_file_path, new_file_path)
+#delete_word_index(db["title"],["binari"],"1601-00007")
