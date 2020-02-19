@@ -1,7 +1,6 @@
 import math
 import sys
 import json
-import time
 import collections
 
 sys.path.append('..')  # append the main directory path
@@ -26,6 +25,7 @@ def rank(raw_query,query,mode):
         return "None"
     else:
         dict_tfidf = []
+        # speed up
         for term in query:
             if read_index(term,mode) != None:
                 dict_term[term] = read_index(term,mode)
@@ -44,6 +44,7 @@ def rank(raw_query,query,mode):
         dict_tfidf_sort = sorted(dict_tfidf, key = lambda x:x[1], reverse = True)
         return dict_tfidf_sort
 
+# speed up
 def cate(dict_final):
     dict_classi = collections.defaultdict(list)
     for each_list in dict_final:
