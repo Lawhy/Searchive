@@ -35,19 +35,18 @@
             {% for author in result.authors %}
             <a class="mr-2" href="#">{{author}}</a>
             {% endfor %}
-            <small class="text-muted" style="float:right;">{{ datetime.datetime.strptime(result.id.split('.')[0],'%y%m').strftime("%Y %b") }}</small>
+            <!-- <small class="text-muted" style="float:right;">{{ datetime.datetime.strptime(result.id.split('.')[0],'%y%m').strftime("%Y %b") }}</small> -->
           </div>
-          <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ ' '.join(result.title) }}</a></h2>
-          <small class="text-muted">{{result.subjects[0]}}</small>
-          {% for subject in result.subjects[1:] %}
-          <small class="text-muted">{{subject}}</small>
+          <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ result.title }}</a></h2>
+          {% for abbr,subject in result.subjs.items() %}
+          <small class="text-muted">{{abbr}}</small>
           {% endfor %}
-          <p class="article-content" lang="latex">Abstract:{{ ' '.join(result.abstract) }}</p>
+          <p class="article-content" lang="latex">Abstract:{{ result.abs }}</p>
         </div>
       </article>
     {% endfor %}
-    <a>Searches related to {{query}}:</a><br>
-    <small>
+    <!-- <a>Searches related to {{query}}:</a><br> -->
+    <!-- <small>
       <table style="width:300px; display:table">
         <tr>
           <th><a class="text-muted">why are you gae</a></th>
@@ -55,7 +54,7 @@
           <th><a class="text-muted">you are gae</a></th>
         </tr>
       </table>
-    </small>
+    </small> -->
     <br>
     <table style="width: 100%">
       <tr>
