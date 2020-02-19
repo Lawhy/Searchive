@@ -59,3 +59,7 @@ However, you are allowed to use libraries for secondary features, such as autoco
 * Do not use DICE! (you don't have root access)
 * pip install firebase_admin
 * Download the json public key file shared in the groupchat
+
+### To install and run mongdb:
+configure your local mongdb: https://www.runoob.com/mongodb/mongodb-osx-install.html
+use python to operate on your local mongodb: https://api.mongodb.com/python/current/tutorial.html
