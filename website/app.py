@@ -9,7 +9,7 @@ from scipy import spatial
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from spellchecker import SpellChecker
-from ranking.tfidf_test import search_for_detail
+from ranking.tfidf_test_v2 import search_for_detail
 
 app = Flask(__name__)
 
@@ -34,8 +34,6 @@ def help():
 
 @app.route('/result', methods=['GET'])
 def result():
-    results = getResult('robust model')
-
     try:
         startIndex = int(request.args.get('si'))
     except:
@@ -59,6 +57,10 @@ def result():
     except:
         return redirect('/')
 
+    results = getResult(query)
+
+    print(query)
+
     numberOfResults = len(results)
 
     # if len(query.split()) <= 5:
@@ -67,7 +69,11 @@ def result():
     #         closest_words[idx] = find_closest_embeddings(embeddings_dict[word])[1:10]
     #     print(closest_words)
 
-    return render_template('result.html', datetime=dt, title='result', results=results[startIndex:startIndex+numberOfResultsPerPage]
+    resultsPerPage = results[startIndex:startIndex+numberOfResultsPerPage]
+
+    # return render_template('test.html', results=resultsPerPage)
+
+    return render_template('result.html', datetime=dt, title='result', results=resultsPerPage
     , startIndex=startIndex, numberOfResultsPerPage=numberOfResultsPerPage, numberOfResults=numberOfResults, query=query, correction=correction)
 
 @app.route('/about')

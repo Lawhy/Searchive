@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for result in results %}
+  <article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        {% for author in result.authors %}
+        <a class="mr-2" href="#">{{author}}</a>
+        {% endfor %}
+      </div>
+      <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ result.title }}</a></h2>
+      {% for abbr,subject in result.subjs.items() %}
+      <small class="text-muted">{{abbr}}</small>
+      {% endfor %}
+      <p class="article-content" lang="latex">Abstract:{{ result.abs }}</p>
+    </div>
+  </article>
+{% endfor %}
+{% endblock content %}

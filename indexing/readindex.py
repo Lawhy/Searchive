@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 
-cred = credentials.Certificate("/Users/AlisonLee/Downloads/searchive-e90e4-firebase-adminsdk-pz1m9-6a24ab72e1.json")
+cred = credentials.Certificate("../../searchive-e90e4-firebase-adminsdk-pz1m9-6a24ab72e1.json")
 project_id = "searchive-e90e4"
 
 firebase_admin.initialize_app(cred, {
@@ -33,5 +33,3 @@ def read_index(word, mode):
 
 
     return param_dict
-
-

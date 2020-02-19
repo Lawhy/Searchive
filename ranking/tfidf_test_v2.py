@@ -20,8 +20,8 @@ def tfidf_score_cal(df,tf):
     else:
         return 0
 
-def rank(query,mode):
-    docid_set = mode_select(query,mode)
+def rank(raw_query,query,mode):
+    docid_set = mode_select(raw_query,mode)
     if docid_set == "None":
         return "None"
     else:
@@ -29,8 +29,12 @@ def rank(query,mode):
         tfidf_score = 0
         for docid in docid_set:
             for term in query:
-                dict_term = read_index(term, mode)
-                df = dict_term["df"]
+                if read_index(term,mode) != None:
+                    dict_term = read_index(term, mode)
+                    df = dict_term["df"]
+                else:
+                    df = 0
+
                 if docid in dict_term.keys():
                     tf = dict_term[docid]['tf']
                 else:
@@ -42,17 +46,20 @@ def rank(query,mode):
         return dict_tfidf_sort
 
 def search_for_detail(raw_query,mode="abstract"):
-    query = preprocess_squery(raw_query)
-    dict_final = rank(query,mode)
-    result_list = []
-    for each_list in dict_final:
-        dict_result_temp = {}
-        doc_id_p = each_list[0].replace('-','.')
-        doc_id = int(float(doc_id_p))
-        filepath = '../data/' + str(doc_id) + '.json'
-        dict_1907 = read(filepath)
-        dict_result_temp = dict_1907[doc_id_p]
-        dict_result_temp["id"] = doc_id_p
-        dict_result_temp['score'] = each_list[1]
-        result_list.append(dict_result_temp)
-    return result_list
+    query,_ = preprocess_squery(raw_query,mode)
+    dict_final = rank(raw_query,query,mode)
+    if dict_final == 'None':
+        return []
+    else:
+        result_list = []
+        for each_list in dict_final:
+            dict_result_temp = {}
+            doc_id_p = each_list[0].replace('-','.')
+            doc_id = int(float(doc_id_p))
+            filepath = '../../data/' + str(doc_id) + '.json'
+            dict_1907 = read(filepath)
+            dict_result_temp = dict_1907[doc_id_p]
+            dict_result_temp["id"] = doc_id_p
+            dict_result_temp['score'] = each_list[1]
+            result_list.append(dict_result_temp)
+        return result_list
