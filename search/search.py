@@ -148,5 +148,3 @@ def mode_select(query,mode):
 #
 # print(mode_select(search_phrase,mode))
 # print(mode_select(search_query,mode))
-
-

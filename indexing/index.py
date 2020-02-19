@@ -12,7 +12,7 @@ Initialise firebase service
 """
 
 # Use the application default credentials
-cred = credentials.Certificate("/Users/AlisonLee/Downloads/searchive-e90e4-firebase-adminsdk-pz1m9-6a24ab72e1.json")
+cred = credentials.Certificate("../../searchive-e90e4-firebase-adminsdk-pz1m9-6a24ab72e1.json")
 project_id = "searchive-e90e4"
 
 firebase_admin.initialize_app(cred, {

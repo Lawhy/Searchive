@@ -23,8 +23,8 @@ def tfidf_score_cal(df,tf):
     else:
         return 0
 
-def rank(query,mode):
-    docid_set = mode_select(query,mode)
+def rank(raw_query,query,mode):
+    docid_set = mode_select(raw_query,mode)
     dict_tfidf = []
     tfidf_score = 0
     for docid in docid_set:
@@ -42,13 +42,13 @@ def rank(query,mode):
     return dict_tfidf_sort
 
 def search_for_detail(raw_query,mode="abstract"):
-    query = preprocess_squery(raw_query)
-    dict_final = rank(query,mode)
+    query,_ = preprocess_squery(raw_query,mode)
+    dict_final = rank(raw_query,query,mode)
     dict_result = collections.OrderedDict()
     for each_list in dict_final:
         doc_id_p = each_list[0].replace('-','.')
         doc_id = int(float(doc_id_p))
-        filepath = '../data/' + str(doc_id) + '.json'
+        filepath = '../../data/' + str(doc_id) + '.json'
         dict_1907 = read(filepath)
         dict_result[doc_id_p] = dict_1907[doc_id_p]
         dict_result[doc_id_p]['score'] = each_list[1]
