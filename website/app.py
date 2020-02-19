@@ -35,6 +35,13 @@ def help():
 @app.route('/result', methods=['GET'])
 def result():
     try:
+        mode = request.args.get('mode')
+        if mode == None:
+            mode = 'abstract'
+    except:
+        mode = 'abstract'
+
+    try:
         startIndex = int(request.args.get('si'))
     except:
         startIndex = 0
@@ -45,21 +52,30 @@ def result():
         numberOfResultsPerPage = 10
 
     try:
+        correctionFlag = request.args.get('correctionFlag')
+    except:
+        correctionFlag = None
+
+    try:
         query = request.args.get('q')
         if not query.strip():
             return redirect('/')
         else:
             misspelled = spell.unknown(query.strip().split())
-            if len(misspelled) != 0:
+            if len(misspelled) != 0 and correctionFlag == None:
                 correction = ' '.join([spell.correction(word) for word in query.strip().split()])
             else:
                 correction = None
     except:
         return redirect('/')
 
-    results = getResult(query)
-
+    print(correction)
     print(query)
+
+    if correction:
+        results = getResult(correction)
+    else:
+        results = getResult(query)
 
     numberOfResults = len(results)
 
