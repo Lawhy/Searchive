@@ -7,7 +7,7 @@ from time import *
 import sys
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
-from indexing.readindex import read_index
+from indexing.readindex_mongo import read_index
 # from readindex import read_index
 # from normalise import Normaliser
 
@@ -44,13 +44,14 @@ def term_search(term,mode):
     docid_list = []
 
     term_dic = read_index(term,mode)
+
     if term_dic == None: #term is not in index
         return '0'
 
     else :
         docid = term_dic.keys()
         for item in docid:
-            if item != 'df':
+            if item != 'df' and item!= '_id':
                 docid_list.append(item)
         return docid_list
 
@@ -67,7 +68,7 @@ def query_search(query,mode):
         else:
             query_list.append(term_search(term[i],mode))
             i += 1
-    #print(query_list.__len__())
+
     if query_list.__len__() > 0:
         query_docid = set(query_list[0])
         for value in iter(query_list[1:]):
@@ -98,7 +99,7 @@ def phrase_search(search_phrase,mode):
     term_dic_l = read_index(term[-1], mode)
 
     for docid in term_ids:
-        posif = term_dic_f.get(docid)['pos']
+        posif = term_dic_f[docid]['pos']
         posil = term_dic_l.get(docid)['pos']
         m = 0
         n = 0
@@ -158,12 +159,36 @@ def mode_select(query,mode):
     print('search time', run_time)
     return query_docid
 
-#
-# '''test'''
-# search_query = "effective energy density"
-# mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-# search_phrase = "\"computer science\""
-# search_query= "science"
-#
-# print(mode_select(search_phrase,mode))
-# print(mode_select(search_query,'abstract'))
+
+"""customise the filepath in readindex_mongo.py"""
+import os
+def walkFile(file):
+    for root, dirs, files in os.walk(file):
+
+        # root 表示当前正在访问的文件夹路径
+        # dirs 表示该文件夹下的子目录名list
+        # files 表示该文件夹下的文件list
+
+        # 遍历文件
+        for f in files:
+            print('file_path', os.path.join(root, f))
+            initialise(os.path.join(root, f))
+
+        # 遍历所有的文件夹
+        for d in dirs:
+            print('Dirs',os.path.join(root, d))
+
+def readfiles():
+    walkFile("/Users/mac/Documents/TTDS")
+
+if __name__ == '__main__':
+    # readfiles()
+
+    '''test'''
+    search_query = "effective energy density"
+    mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
+    search_phrase = "\"effective energy\""
+    # search_query= "science"
+    search_word = "computer"
+    print(mode_select(search_query,mode))
+    print(mode_select(search_phrase,'abstract'))
