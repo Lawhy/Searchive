@@ -7,9 +7,8 @@ from time import *
 import sys
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
-from indexing.readindex import read_index
-# from readindex import read_index
-# from normalise import Normaliser
+from indexing.readindex_mongo import read_index
+
 
 '''      read json file      '''
 def readfile(file_path):
@@ -17,6 +16,7 @@ def readfile(file_path):
         text_t = f.read()
         text = json.loads(text_t)
         f.close()
+
     return text #type dict
 
 '''preprocess search query'''
@@ -33,7 +33,7 @@ def preprocess_squery(query,mode):
     # get tokens from the raw text
         clean_text = norm.normalise_text(query)
 
-    return clean_text  #len_of_query
+    return clean_text
 
 '''    term search   '''
 def term_search(term,mode):
@@ -42,20 +42,18 @@ def term_search(term,mode):
     #     posi_list = list(text[term]['docdict'].keys())
     # return posi_list
     docid_list = []
-
-    term_dic = read_index(term,mode)
+    term_dic = read_index(term, mode)
     if term_dic == None: #term is not in index
         return '0'
-
     else :
         docid = term_dic.keys()
         for item in docid:
-            if item != 'df':
+            if item != 'df' and item!= '_id':
                 docid_list.append(item)
         return docid_list
 
 '''   query search   '''
-def query_search(query,mode):
+def query_search(query , mode):
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
@@ -67,7 +65,7 @@ def query_search(query,mode):
         else:
             query_list.append(term_search(term[i],mode))
             i += 1
-    #print(query_list.__len__())
+
     if query_list.__len__() > 0:
         query_docid = set(query_list[0])
         for value in iter(query_list[1:]):
@@ -76,10 +74,12 @@ def query_search(query,mode):
             return 'None'
         else:
             return query_docid
+        # return query_docid
     else:
         return 'None'
 
 
+''' phrase search--n terms '''
 ''' phrase search--n terms '''
 def phrase_search(search_phrase,mode):
     # len_of_query = preprocess_squery(search_phrase,mode)[1]
@@ -96,48 +96,50 @@ def phrase_search(search_phrase,mode):
 
     term_dic_f = read_index(term[0], mode)
     term_dic_l = read_index(term[-1], mode)
-
-    for docid in term_ids:
-        posif = term_dic_f.get(docid)['pos']
-        posil = term_dic_l.get(docid)['pos']
-        m = 0
-        n = 0
-        while m < posif.__len__():
-            while n < posil.__len__():
-                if (int(posil[n]) - int(posif[m]) == len_of_query-1):
-                    IDtftl.append(term_ids[i])
-                n += 1
-            m += 1
-    docid_phrase = []
-    if len_of_query > 2:
-        for id_query in IDtftl:
-            i = 1
-            while i < len_of_query - 1:
-                posif = read_index(term[i-1], mode).get(id_query)['pos']
-                posil = read_index(term[i], mode).get(id_query)['pos']
+    if term_dic_f == None or term_dic_l == None:
+        return 'None'
+    else:
+        for docid in term_ids:
+            if term_dic_f.__contains__(docid) and term_dic_l.__contains__(docid):
+                posif = term_dic_f.get(docid)['pos']
+                posil = term_dic_l.get(docid)['pos']
                 m = 0
                 n = 0
                 while m < posif.__len__():
                     while n < posil.__len__():
-                        if (int(posil[n]) - int(posif[m]) != 1):
-                            break
-                        else:
-                            docid_phrase.append(id_query)
+                        if (int(posil[n]) - int(posif[m]) == len_of_query-1):
+                            IDtftl.append(docid)
                         n += 1
                     m += 1
-                i += 1
+    docid_phrase = []
+    if len_of_query > 2:
+        for id_query in IDtftl:
+            for i in range(len_of_query-1):
+                dictf = read_index(term[i], mode)
+                dictl = read_index(term[i+1], mode)
+                if dictf.__contains__(id_query) and dictl.__contains__(id_query):
+                    posif = dictf.get(id_query)['pos']
+                    posil = dictl.get(id_query)['pos']
+                    m = 0
+                    n = 0
+                    while m < posif.__len__():
+                        while n < posil.__len__():
+                            if (int(posil[n]) - int(posif[m]) == 1):
+                                docid_phrase.append(id_query)
+                            n += 1
+                        m += 1
     else:
         docid_phrase = IDtftl
-    query_docid = set(docid_phrase)
 
-    if query_docid.__len__() == 0:
+    phrase_docid = set(docid_phrase)
+    if docid_phrase.__len__() == 0:
         return 'None'
     else:
-        return query_docid
-    # return query_docid
+        return phrase_docid
 
 def mode_select(query,mode):
     begin_time = time()
+    query_docid = None
     if mode == 'general':
         if query[0]=='\"' and query[-1] == '\"':
             query_docid_abs = phrase_search(query, 'abstract')
@@ -147,23 +149,37 @@ def mode_select(query,mode):
             query_docid_abs = query_search(query,'abstract')
             query_docid_title = query_search(query, 'title')
             query_docid_author = query_search(query, 'author')
-        query_docid = query_docid_abs.union(query_docid_title , query_docid_author)
+
+        if query_docid_abs != 'None' and query_docid_title != 'None' and query_docid_author != 'None':
+            query_docid = query_docid_abs.union(query_docid_title, query_docid_author)
+        elif query_docid_abs == 'None' and query_docid_title != 'None' and query_docid_author != 'None':
+            query_docid = query_docid_title.union(query_docid_author)
+        elif query_docid_abs != 'None' and query_docid_title == 'None' and query_docid_author != 'None':
+            query_docid = query_docid_abs.union(query_docid_author)
+        elif query_docid_abs != 'None' and query_docid_title != 'None' and query_docid_author == 'None':
+            query_docid = query_docid_title.union(query_docid_abs)
+        elif query_docid_abs != 'None' and query_docid_title == 'None' and query_docid_author == 'None':
+            query_docid = query_docid_abs
+        elif query_docid_abs == 'None' and query_docid_title != 'None' and query_docid_author == 'None':
+            query_docid = query_docid_title
+        elif query_docid_abs == 'None' and query_docid_title == 'None' and query_docid_author != 'None':
+            query_docid = query_docid_author
+
     else:
         if query[0]=='\"' and query[-1] == '\"':
             query_docid = phrase_search(query, mode)
         else:
-            query_docid = query_search(query,mode)
+            query_docid = query_search(query, mode)
     end_time = time()
     run_time = end_time - begin_time
     print('search time', run_time)
     return query_docid
 
-#
-# '''test'''
-# search_query = "effective energy density"
-# mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-# search_phrase = "\"computer science\""
-# search_query= "science"
-#
-# print(mode_select(search_phrase,mode))
-# print(mode_select(search_query,'abstract'))
+
+if __name__ == '__main__':
+    '''test'''
+    search_query = "constant spacetime mean curvature surfaces"
+    mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
+    search_phrase = "\"constant spacetime mean curvature surfaces\""
+    print(mode_select(search_query, 'general').__len__())  # result:search time 0.0057  # 13572
+    print(mode_select(search_phrase, mode))  # result:search time 0.0476  #1

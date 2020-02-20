@@ -158,12 +158,13 @@ def mode_select(query,mode):
     print('search time', run_time)
     return query_docid
 
-#
-# '''test'''
-# search_query = "effective energy density"
-# mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-# search_phrase = "\"computer science\""
-# search_query= "science"
-#
-# print(mode_select(search_phrase,mode))
-# print(mode_select(search_query,'abstract'))
+
+if __name__ == '__main__':
+    '''test'''
+    search_query = "effective energy density"
+    mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
+    search_phrase = "\"computer science\""
+    # search_query= "science"
+
+    # print(mode_select(search_phrase,mode))
+    print(mode_select(search_phrase,'abstract'))

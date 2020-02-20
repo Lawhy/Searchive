@@ -6,8 +6,11 @@ import time
 
 myclient = pymongo.MongoClient('mongodb://localhost:27017/')
 
+"""you clinet name"""
 db = myclient["ttds"]
 
+
+"""read file"""
 def read(filepath):
     with open(filepath, "r") as f:
         json_text = f.read()
@@ -16,7 +19,7 @@ def read(filepath):
     return text
 
 
-# Deprecated
+# Deprecated, delta encoding
 def init_index_delta(doc_id, text, ref):
     word_cnt = 0
     for pos, word in enumerate(text):
@@ -65,7 +68,8 @@ def init_index_delta(doc_id, text, ref):
 
 
 def delete_word_index(ref, old_text, doc_id):
-    for word in old_text:
+
+    for word in set(old_text):
         tf_decre = ref.find_one({"_id": word})[doc_id]["tf"]
         ref.update_one({"_id": word},
             {'$unset':
@@ -74,6 +78,8 @@ def delete_word_index(ref, old_text, doc_id):
                  },
                 '$inc': {"df" : -tf_decre}
         })
+        if ref.find_one({"_id": word})["df"] == 0:
+            ref.remove({"_id": word})
     return
 
 def init_index(doc_id, text, ref):
@@ -113,6 +119,7 @@ def init_index(doc_id, text, ref):
     return word_cnt
 
 
+"""initialise index, input file path"""
 def initialise(filename):
     """
   Initialise index
@@ -139,6 +146,7 @@ def initialise(filename):
     for key in text.keys():
 
 
+
         doc_total = doc_total + 1
         doc_id = key.replace(".", "-")
         print(doc_id)
@@ -159,44 +167,72 @@ def initialise(filename):
         total_title_word = total_title_word + file_title_cnt
         total_author_word = total_author_word + file_author_cnt
 
-
-
-
-    param_ref.update_one(
-                {'_id': 'abstract'},
-
-                {'$inc': {
-                    'total_doc_number': doc_total,
-                    'total_document_length': total_abs_word
-                }
+    if param_ref.count_documents({ "_id": 'totaldoc'}) > 0:
+        param_ref.update_one(
+            {'_id': 'totaldoc'},
+            {'$inc': {
+                'num': doc_total
             }
-    )
+            }
+        )
 
-    param_ref.update_one(
-        {'_id': 'title'},
+        param_ref.update_one(
+                    {'_id': 'abstract'},
 
-        {'$inc': {
-            'total_doc_number': doc_total,
-            'total_document_length': total_title_word
-        }
-        }
-    )
+                    {'$inc': {
+                        'len': total_abs_word #length
+                    }
+                }
+        )
 
-    param_ref.update_one(
-        {'_id': 'author'},
+        param_ref.update_one(
+            {'_id': 'title'},
 
-        {'$inc': {
-            'total_doc_number': doc_total,
-            'total_document_length': total_author_word
+            {'$inc': {
+                'len': total_title_word
+            }
+            }
+        )
+
+        param_ref.update_one(
+            {'_id': 'author'},
+
+            {'$inc': {
+                'len': total_author_word
+            }
+            }
+        )
+    else:
+        param_ref.insert_one(
+            {'_id': 'totaldoc',
+             'num': doc_total
+            }
+        )
+
+        param_ref.insert_one(
+            {'_id': 'abstract',
+             'len': total_abs_word  # length
+            }
+        )
+
+        param_ref.insert_one(
+            {'_id': 'title',
+             'len': total_title_word
+
         }
-        }
-    )
+        )
+
+        param_ref.insert_one(
+            {'_id': 'author',
+            'len': total_author_word
+            }
+        )
 
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return
 
-
+"""update index, input old file path and new file path"""
 def update(oldfile, newfile):
 
     normaliser = Normaliser()
@@ -262,7 +298,7 @@ def update(oldfile, newfile):
         {'_id': 'abstract'},
 
         {'$inc': {
-            'total_document_length': abs_len_diff_sum
+            'len': abs_len_diff_sum
         }
         }
     )
@@ -271,7 +307,7 @@ def update(oldfile, newfile):
         {'_id': 'title'},
 
         {'$inc': {
-            'total_document_length': title_len_diff_sum
+            'len': title_len_diff_sum
         }
         }
     )
@@ -280,7 +316,7 @@ def update(oldfile, newfile):
         {'_id': 'author'},
 
         {'$inc': {
-            'total_document_length': author_len_diff_sum
+            'len': author_len_diff_sum
         }
         }
     )
@@ -290,7 +326,10 @@ def update(oldfile, newfile):
 
 
 
-"""customise the filepath yourself"""
-initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
+
+
+"""customise the data filepath yourself"""
+"""you can write a function to loop over all the files in your data repo"""
+initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1602.json")
 #update(old_file_path, new_file_path)
 
