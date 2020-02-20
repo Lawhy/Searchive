@@ -8,7 +8,10 @@ import sys
 sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
 from indexing.readindex_mongo import read_index
+from indexing.index_no_pos import read_index_file
 
+# from readindex import read_index
+# from normalise import Normaliser
 
 '''      read json file      '''
 def readfile(file_path):
@@ -35,14 +38,15 @@ def preprocess_squery(query,mode):
     return clean_text  #len_of_query
 
 '''    term search   '''
-def term_search(term,mode):
+def term_search(term,mode,dictindex):
     # posi_list = []
     # if readindex(file_path).__contains__(term):
     #     posi_list = list(text[term]['docdict'].keys())
     # return posi_list
     docid_list = []
 
-    term_dic = read_index(term,mode)
+    term_dic = dictindex.get(term)
+
     if term_dic == None: #term is not in index
         return '0'
 
@@ -54,17 +58,17 @@ def term_search(term,mode):
         return docid_list
 
 '''   query search   '''
-def query_search(query,mode):
+def query_search(query,mode,dictindex):
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
     i = 0
     query_list = []
     while i < len_of_query:
-        if term_search(term[i] , mode) == '0':
+        if term_search(term[i],mode,dictindex) == '0':
             i += 1
         else:
-            query_list.append(term_search(term[i],mode))
+            query_list.append(term_search(term[i],mode,dictindex))
             i += 1
 
     if query_list.__len__() > 0:
@@ -78,6 +82,25 @@ def query_search(query,mode):
     else:
         return 'None'
 
+'''    term search   '''
+def term_psearch(term,mode):
+    # posi_list = []
+    # if readindex(file_path).__contains__(term):
+    #     posi_list = list(text[term]['docdict'].keys())
+    # return posi_list
+    docid_list = []
+
+    term_dic = read_index(term,mode)
+
+    if term_dic == None: #term is not in index
+        return '0'
+
+    else :
+        docid = term_dic.keys()
+        for item in docid:
+            if item != 'df' and item!= '_id':
+                docid_list.append(item)
+        return docid_list
 
 ''' phrase search--n terms '''
 def phrase_search(search_phrase,mode):
@@ -85,8 +108,8 @@ def phrase_search(search_phrase,mode):
     term = preprocess_squery(search_phrase,mode)
     len_of_query = term.__len__()
 
-    t1 = set(term_search(term[0],mode))
-    t2 = set(term_search(term[-1],mode))
+    t1 = set(term_psearch(term[0],mode))
+    t2 = set(term_psearch(term[-1],mode))
     term_ids = list(t1 & t2)
 
     i = 0
@@ -146,9 +169,9 @@ def mode_select(query,mode):
             query_docid_title = phrase_search(query, 'title')
             query_docid_author = phrase_search(query, 'author')
         else:
-            query_docid_abs = query_search(query,'abstract')
-            query_docid_title = query_search(query, 'title')
-            query_docid_author = query_search(query, 'author')
+            query_docid_abs = query_search(query,'abstract',dictindex)
+            query_docid_title = query_search(query, 'title',dictindex)
+            query_docid_author = query_search(query, 'author',dictindex)
 
 
         if query_docid_abs != 'None' and query_docid_title != 'None' and query_docid_author != 'None':
@@ -170,7 +193,7 @@ def mode_select(query,mode):
         if query[0]=='\"' and query[-1] == '\"':
             query_docid = phrase_search(query, mode)
         else:
-            query_docid = query_search(query,mode)
+            query_docid = query_search(query,mode,dictindex)
     end_time = time()
     run_time = end_time - begin_time
     print('search time', run_time)
@@ -179,10 +202,13 @@ def mode_select(query,mode):
 
 if __name__ == '__main__':
     '''test'''
+    filepath = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
+    dictindex = read_index_file(filepath)
+
     search_query = "effective energy density"
     mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
     search_phrase = "\"effective energy\""
     # search_query= "science"
     search_word = "computer"
-    print(mode_select("energy", 'abstruct').__len__())  # result:search time 0.0057  # 13572
-    print(mode_select("\"effective energy\"", 'abstract'))  # result:search time 0.0476  #1
+    print(mode_select("effective energy",'abstruct').__len__()) # result:search time 0.0057  # 13572
+    print(mode_select("\"effective energy\"",'abstract')) # result:search time 0.08  #1
