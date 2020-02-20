@@ -44,9 +44,7 @@ def term_search(term,mode,dictindex):
     #     posi_list = list(text[term]['docdict'].keys())
     # return posi_list
     docid_list = []
-
     term_dic = dictindex.get(term)
-
     if term_dic == None: #term is not in index
         return '0'
 
@@ -59,6 +57,12 @@ def term_search(term,mode,dictindex):
 
 '''   query search   '''
 def query_search(query,mode,dictindex):
+    if mode == 'abstract':
+        dictindex = dictindex_abs
+    elif mode == 'title':
+        dictindex = dictindex_tit
+    elif mode == 'author':
+        dictindex = dictindex_aut
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
@@ -84,17 +88,11 @@ def query_search(query,mode,dictindex):
 
 '''    term search   '''
 def term_psearch(term,mode):
-    # posi_list = []
-    # if readindex(file_path).__contains__(term):
-    #     posi_list = list(text[term]['docdict'].keys())
-    # return posi_list
     docid_list = []
-
     term_dic = read_index(term,mode)
-
+    # print(term_dic) {'_id': 'constant', 'df': 2277, '1901-00002': {'tf': 2, 'pos': [28, 40]}, '1901-00018': {'pos': [76], 'tf': 1}, '1901-00028': {'pos': [10], 'tf': 1}, '1901-00119': {'pos': [42, 76], 'tf': 2}, '1901-00210': {'pos': [93], 'tf': 1},
     if term_dic == None: #term is not in index
         return '0'
-
     else :
         docid = term_dic.keys()
         for item in docid:
@@ -118,60 +116,63 @@ def phrase_search(search_phrase,mode):
 
     term_dic_f = read_index(term[0], mode)
     term_dic_l = read_index(term[-1], mode)
-    if term_dic_f == None:
+    if term_dic_f == None or term_dic_l == None:
         return 'None'
     else:
         for docid in term_ids:
-            posif = term_dic_f.get(docid)['pos']
-            posil = term_dic_l.get(docid)['pos']
-            m = 0
-            n = 0
-            while m < posif.__len__():
-                while n < posil.__len__():
-                    if (int(posil[n]) - int(posif[m]) == len_of_query-1):
-                        IDtftl.append(term_ids[i])
-                    n += 1
-                m += 1
-    docid_phrase = []
-    if len_of_query > 2:
-        for id_query in IDtftl:
-            i = 1
-            while i < len_of_query - 1:
-                posif = read_index(term[i-1], mode).get(id_query)['pos']
-                posil = read_index(term[i], mode).get(id_query)['pos']
+            if term_dic_f.__contains__(docid) and term_dic_l.__contains__(docid):
+                posif = term_dic_f.get(docid)['pos']
+                posil = term_dic_l.get(docid)['pos']
                 m = 0
                 n = 0
                 while m < posif.__len__():
                     while n < posil.__len__():
-                        if (int(posil[n]) - int(posif[m]) != 1):
-                            break
-                        else:
-                            docid_phrase.append(id_query)
+                        if (int(posil[n]) - int(posif[m]) == len_of_query-1):
+                            IDtftl.append(docid)
                         n += 1
                     m += 1
-                i += 1
+
+    docid_phrase = []
+    if len_of_query > 2:
+
+        for id_query in IDtftl:
+            for i in range(len_of_query-1):
+                dictf = read_index(term[i], mode)
+                dictl = read_index(term[i+1], mode)
+                if dictf.__contains__(id_query) and dictl.__contains__(id_query):
+                    posif = dictf.get(id_query)['pos']
+                    posil = dictl.get(id_query)['pos']
+                    m = 0
+                    n = 0
+                    while m < posif.__len__():
+                        while n < posil.__len__():
+                            if (int(posil[n]) - int(posif[m]) == 1):
+                                docid_phrase.append(id_query)
+                            n += 1
+                        m += 1
     else:
         docid_phrase = IDtftl
-    query_docid = set(docid_phrase)
 
-    if query_docid.__len__() == 0:
+    phrase_docid = set(docid_phrase)
+    if docid_phrase.__len__() == 0:
         return 'None'
     else:
-        return query_docid
+        return phrase_docid
     # return query_docid
 
 def mode_select(query,mode):
     begin_time = time()
     query_docid = None
+
     if mode == 'general':
         if query[0]=='\"' and query[-1] == '\"':
             query_docid_abs = phrase_search(query, 'abstract')
             query_docid_title = phrase_search(query, 'title')
             query_docid_author = phrase_search(query, 'author')
         else:
-            query_docid_abs = query_search(query,'abstract',dictindex)
-            query_docid_title = query_search(query, 'title',dictindex)
-            query_docid_author = query_search(query, 'author',dictindex)
+            query_docid_abs = query_search(query,'abstract',dictindex_abs)
+            query_docid_title = query_search(query, 'title',dictindex_tit)
+            query_docid_author = query_search(query, 'author',dictindex_aut)
 
 
         if query_docid_abs != 'None' and query_docid_title != 'None' and query_docid_author != 'None':
@@ -193,6 +194,12 @@ def mode_select(query,mode):
         if query[0]=='\"' and query[-1] == '\"':
             query_docid = phrase_search(query, mode)
         else:
+            if mode == 'abstract':
+                dictindex = dictindex_abs
+            elif mode == 'title':
+                dictindex = dictindex_tit
+            elif mode == 'author':
+                dictindex = dictindex_aut
             query_docid = query_search(query,mode,dictindex)
     end_time = time()
     run_time = end_time - begin_time
@@ -202,13 +209,16 @@ def mode_select(query,mode):
 
 if __name__ == '__main__':
     '''test'''
-    filepath = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
-    dictindex = read_index_file(filepath)
+    filepath_abs = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
+    dictindex_abs = read_index_file(filepath_abs)
+    filepath_tit = '/Users/mac/PycharmProjects/mypro/venv/search/title_index.pkl'
+    dictindex_tit = read_index_file(filepath_tit)
+    filepath_aut = '/Users/mac/PycharmProjects/mypro/venv/search/author_index.pkl'
+    dictindex_aut = read_index_file(filepath_aut)
 
-    search_query = "effective energy density"
+    search_query = "constant spacetime mean curvature surfaces"
     mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-    search_phrase = "\"effective energy\""
-    # search_query= "science"
-    search_word = "computer"
-    print(mode_select("effective energy",'abstruct').__len__()) # result:search time 0.0057  # 13572
-    print(mode_select("\"effective energy\"",'abstract')) # result:search time 0.08  #1
+
+    search_phrase = "\"constant spacetime mean curvature surfaces\""
+    print(mode_select(search_query,'general').__len__()) # result:search time 0.0057  # 13572
+    print(mode_select(search_phrase,'general')) # result:search time 0.08  #1
