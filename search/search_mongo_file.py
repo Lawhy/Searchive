@@ -163,6 +163,7 @@ def phrase_search(search_phrase,mode):
 def mode_select(query,mode):
     begin_time = time()
     query_docid = None
+    query_docid = None
 
     if mode == 'general':
         if query[0]=='\"' and query[-1] == '\"':
@@ -206,19 +207,17 @@ def mode_select(query,mode):
     print('search time', run_time)
     return query_docid
 
+filepath_abs = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
+dictindex_abs = read_index_file(filepath_abs)
+filepath_tit = '/Users/mac/PycharmProjects/mypro/venv/search/title_index.pkl'
+dictindex_tit = read_index_file(filepath_tit)
+filepath_aut = '/Users/mac/PycharmProjects/mypro/venv/search/author_index.pkl'
+dictindex_aut = read_index_file(filepath_aut)
 
 if __name__ == '__main__':
     '''test'''
-    filepath_abs = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
-    dictindex_abs = read_index_file(filepath_abs)
-    filepath_tit = '/Users/mac/PycharmProjects/mypro/venv/search/title_index.pkl'
-    dictindex_tit = read_index_file(filepath_tit)
-    filepath_aut = '/Users/mac/PycharmProjects/mypro/venv/search/author_index.pkl'
-    dictindex_aut = read_index_file(filepath_aut)
-
     search_query = "constant spacetime mean curvature surfaces"
     mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
-
     search_phrase = "\"constant spacetime mean curvature surfaces\""
-    print(mode_select(search_query,'general').__len__()) # result:search time 0.0057  # 13572
+    print(mode_select(search_query,'general')) # result:search time 0.0057  # 13572
     print(mode_select(search_phrase,'general')) # result:search time 0.08  #1
