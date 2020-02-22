@@ -330,6 +330,15 @@ def update(oldfile, newfile):
 
 """customise the data filepath yourself"""
 """you can write a function to loop over all the files in your data repo"""
-initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1602.json")
-#update(old_file_path, new_file_path)
+# initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1602.json")
+# #update(old_file_path, new_file_path)
+
+if __name__ == "__main__":
+    start_time = time.time()
+    from os import listdir
+    from os.path import isfile, join
+    mypath = "../../data/"
+    datafiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '.json' in f]
+    for datafile in datafiles:
+        initialise(mypath+datafile)
 

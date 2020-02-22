@@ -57,12 +57,12 @@ def term_search(term,mode,dictindex):
 
 '''   query search   '''
 def query_search(query,mode,dictindex):
-    if mode == 'abstract':
-        dictindex = dictindex_abs
-    elif mode == 'title':
-        dictindex = dictindex_tit
-    elif mode == 'author':
-        dictindex = dictindex_aut
+    # if mode == 'abstract':
+    #     dictindex = dictindex_abs
+    # elif mode == 'title':
+    #     dictindex = dictindex_tit
+    # elif mode == 'author':
+    #     dictindex = dictindex_aut
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
@@ -160,7 +160,7 @@ def phrase_search(search_phrase,mode):
         return phrase_docid
     # return query_docid
 
-def mode_select(query,mode):
+def mode_select(query,mode,dictindex_abs,dictindex_tit,dictindex_aut):
     begin_time = time()
     query_docid = None
     query_docid = None
@@ -207,12 +207,12 @@ def mode_select(query,mode):
     print('search time', run_time)
     return query_docid
 
-filepath_abs = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
-dictindex_abs = read_index_file(filepath_abs)
-filepath_tit = '/Users/mac/PycharmProjects/mypro/venv/search/title_index.pkl'
-dictindex_tit = read_index_file(filepath_tit)
-filepath_aut = '/Users/mac/PycharmProjects/mypro/venv/search/author_index.pkl'
-dictindex_aut = read_index_file(filepath_aut)
+# filepath_abs = '../../data/abs_dict'
+# dictindex_abs = read_index_file(filepath_abs)
+# filepath_tit = '../../data/title_dict'
+# dictindex_tit = read_index_file(filepath_tit)
+# filepath_aut = '../../data/author_dict'
+# dictindex_aut = read_index_file(filepath_aut)
 
 if __name__ == '__main__':
     '''test'''
