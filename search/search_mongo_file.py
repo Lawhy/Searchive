@@ -9,7 +9,7 @@ sys.path.append('..')  # append the main directory path
 from preprocess.normalise import Normaliser
 from indexing.readindex_mongo import read_index
 from indexing.index_no_pos import read_index_file
-
+'''mongodb--phrase search, index dict--query search.  index_no_pos and index_mongo'''
 # from readindex import read_index
 # from normalise import Normaliser
 
@@ -57,12 +57,12 @@ def term_search(term,mode,dictindex):
 
 '''   query search   '''
 def query_search(query,mode,dictindex):
-    # if mode == 'abstract':
-    #     dictindex = dictindex_abs
-    # elif mode == 'title':
-    #     dictindex = dictindex_tit
-    # elif mode == 'author':
-    #     dictindex = dictindex_aut
+    if mode == 'abstract':
+        dictindex = dictindex_abs
+    elif mode == 'title':
+        dictindex = dictindex_tit
+    elif mode == 'author':
+        dictindex = dictindex_aut
 
     term = preprocess_squery(query, mode)
     len_of_query = term.__len__()
@@ -160,7 +160,7 @@ def phrase_search(search_phrase,mode):
         return phrase_docid
     # return query_docid
 
-def mode_select(query,mode,dictindex_abs,dictindex_tit,dictindex_aut):
+def mode_select(query,mode):
     begin_time = time()
     query_docid = None
     query_docid = None
@@ -207,17 +207,20 @@ def mode_select(query,mode,dictindex_abs,dictindex_tit,dictindex_aut):
     print('search time', run_time)
     return query_docid
 
-# filepath_abs = '../../data/abs_dict'
-# dictindex_abs = read_index_file(filepath_abs)
-# filepath_tit = '../../data/title_dict'
-# dictindex_tit = read_index_file(filepath_tit)
-# filepath_aut = '../../data/author_dict'
-# dictindex_aut = read_index_file(filepath_aut)
+time_start = time()
+filepath_abs = '../data/abs_dict'
+dictindex_abs = read_index_file(filepath_abs)
+filepath_tit = '../data/title_dict'
+dictindex_tit = read_index_file(filepath_tit)
+filepath_aut = '../data/author_dict'
+dictindex_aut = read_index_file(filepath_aut)
+time_end = time()
+print('load time', time_end-time_start)
 
 if __name__ == '__main__':
     '''test'''
     search_query = "constant spacetime mean curvature surfaces"
     mode = 'general'  #mode = 'abstract' / 'title' / 'author'/ 'param'
     search_phrase = "\"constant spacetime mean curvature surfaces\""
-    print(mode_select(search_query,'general')) # result:search time 0.0057  # 13572
-    print(mode_select(search_phrase,'general')) # result:search time 0.08  #1
+    print(mode_select(search_query,'general').__len__()) # result:search time 0.0037  # 13572
+    # print(mode_select(search_phrase,'general')) # result:search time 0.08  #1
