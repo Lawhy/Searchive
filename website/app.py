@@ -9,7 +9,7 @@ from scipy import spatial
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from spellchecker import SpellChecker
-from ranking.tfidf_test_v2 import search_for_detail
+from ranking.ranking_mongdb import search_for_detail
 
 app = Flask(__name__)
 

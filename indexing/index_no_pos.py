@@ -1,7 +1,9 @@
 import json
 import time
 import pickle
-from normalise import Normaliser
+import sys
+sys.path.append('..')
+from preprocess.normalise import Normaliser
 
 abs_dict = {}
 title_dict = {}
@@ -180,15 +182,15 @@ def read_index_file(filepath):
         return dict
 
 
-start_time = time.time()
+# start_time = time.time()
 # initialise("/Users/AlisonLee/Desktop/ttdsdata/2016/1601.json")
 # write("/Users/AlisonLee/Desktop/1601index.pkl",title_dict)
 # print(read_index_file("/Users/AlisonLee/Desktop/1601index.pkl"))
-initialise("/Users/AlisonLee/Desktop/1501.json")
-print(title_dict)
-print(param_dict)
-update("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
-print(title_dict)
-print(param_dict)
+# initialise("/Users/AlisonLee/Desktop/1501.json")
+# print(title_dict)
+# print(param_dict)
+# update("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
+# print(title_dict)
+# print(param_dict)
 
-print("--- %s seconds ---" % (time.time() - start_time))
+# print("--- %s seconds ---" % (time.time() - start_time))
