@@ -94,7 +94,7 @@ def mix(docid_set,dict_term,mode):
     return weight_score(bm25_result,tfidf_result)
 
 def rank(raw_query,query,mode,dictindex,method):
-    docid_set = mode_select(raw_query,mode)
+    docid_set = mode_select(raw_query,mode,ab,ti,au)
     dict_term = {}
 
     if docid_set == "None":
