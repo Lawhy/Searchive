@@ -7,9 +7,9 @@ sys.path.append('..')  # append the main directory path
 from search.search_mongo_file import mode_select, preprocess_squery
 from indexing.index_no_pos import read_index_file
 
-ab = read_index_file("..\..\data\\1907index.pk1")
-au = read_index_file("..\..\data\\1907author.pk1")
-ti = read_index_file("..\..\data\\1907title.pk1")
+ab = read_index_file("../../data/abs_dict")
+au = read_index_file("../../data/author_dict")
+ti = read_index_file("../../data/title_dict")
 
 def read(filepath):
     with open(filepath,'r') as f:
@@ -70,7 +70,7 @@ def tfidf(docid_set,dict_term,mix):
 # mix = True : no sort before add to speed up.
 #       False : sort directly
 def bm25(docid_set,dict_term,mode,mix):
-    dict_param = read_index_file("C:\search-engine-doc\data\\1907param.pk1")
+    dict_param = read_index_file("../../data/param_dict")
     dict_bm25 = []
     for docid in docid_set:
         bm25_score = 0

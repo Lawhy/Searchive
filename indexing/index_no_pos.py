@@ -194,3 +194,23 @@ def read_index_file(filepath):
 # print(param_dict)
 
 # print("--- %s seconds ---" % (time.time() - start_time))
+
+if __name__ == "__main__":
+    start_time = time.time()
+    from os import listdir
+    from os.path import isfile, join
+    mypath = "../../data/"
+    # datafiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '.json' in f]
+    # for datafile in datafiles:
+    #     initialise(mypath+datafile)
+    # write(mypath+"title_dict", title_dict)
+    # write(mypath+"author_dict", author_dict)
+    # write(mypath+"abs_dict", abs_dict)
+    # write(mypath+"param_dict", param_dict)
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    read_index_file(mypath+"title_dict")
+    read_index_file(mypath+"author_dict")
+    read_index_file(mypath+"abs_dict")
+    read_index_file(mypath+"param_dict")
+    while(True):
+        pass

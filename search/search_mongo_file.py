@@ -207,11 +207,11 @@ def mode_select(query,mode):
     print('search time', run_time)
     return query_docid
 
-filepath_abs = '/Users/mac/PycharmProjects/mypro/venv/search/abs_index.pkl'
+filepath_abs = '../../data/abs_dict'
 dictindex_abs = read_index_file(filepath_abs)
-filepath_tit = '/Users/mac/PycharmProjects/mypro/venv/search/title_index.pkl'
+filepath_tit = '../../data/title_dict'
 dictindex_tit = read_index_file(filepath_tit)
-filepath_aut = '/Users/mac/PycharmProjects/mypro/venv/search/author_index.pkl'
+filepath_aut = '../../data/author_dict'
 dictindex_aut = read_index_file(filepath_aut)
 
 if __name__ == '__main__':
