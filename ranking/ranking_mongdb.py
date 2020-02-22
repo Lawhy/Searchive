@@ -2,14 +2,15 @@ import math
 import sys
 import json
 import collections
+import time
 
 sys.path.append('..')  # append the main directory path
 from search.search_mongo_file import mode_select, preprocess_squery
 from indexing.index_no_pos import read_index_file
 
-ab = read_index_file("..\..\data\\1907index.pk1")
-au = read_index_file("..\..\data\\1907author.pk1")
-ti = read_index_file("..\..\data\\1907title.pk1")
+ab = read_index_file("../../data/abs_dict")
+au = read_index_file("../../data/author_dict")
+ti = read_index_file("../../data/title_dict")
 
 def read(filepath):
     with open(filepath,'r') as f:
@@ -46,6 +47,8 @@ def weight_score(bm25,tfidf):
         score = w1 * tfidf[docid]+ w2 * bm25[docid]
         dict_mix.append((docid,score))
     dict_mix_sort = sorted(dict_mix, key=lambda x: x[1], reverse=True)
+    if len(dict_mix_sort) > 1000:
+        dict_mix_sort = dict_mix_sort[:1000]
     return dict_mix_sort
 
 def tfidf(docid_set,dict_term,mix):
@@ -65,12 +68,14 @@ def tfidf(docid_set,dict_term,mix):
         return dict_tfidf
     else:
         dict_tfidf_sort = sorted(dict_tfidf, key=lambda x: x[1], reverse=True)
+        if len(dict_tfidf_sort) > 1000:
+            dict_tfidf_sort = dict_tfidf_sort[:1000]
         return dict_tfidf_sort
 
 # mix = True : no sort before add to speed up.
 #       False : sort directly
 def bm25(docid_set,dict_term,mode,mix):
-    dict_param = read_index_file("C:\search-engine-doc\data\\1907param.pk1")
+    dict_param = read_index_file("../../data/param_dict")
     dict_bm25 = []
     for docid in docid_set:
         bm25_score = 0
@@ -86,6 +91,8 @@ def bm25(docid_set,dict_term,mode,mix):
         return dict_bm25
     else:
         dict_bm25_sort = sorted(dict_bm25, key=lambda x: x[1], reverse=True)
+        if len(dict_bm25_sort) > 1000:
+            dict_bm25_sort = dict_bm25_sort[:1000]
         return dict_bm25_sort
 
 def mix(docid_set,dict_term,mode):
@@ -94,7 +101,7 @@ def mix(docid_set,dict_term,mode):
     return weight_score(bm25_result,tfidf_result)
 
 def rank(raw_query,query,mode,dictindex,method):
-    docid_set = mode_select(raw_query,mode)
+    docid_set = mode_select(raw_query,mode,ab,ti,au)
     dict_term = {}
 
     if docid_set == "None":
@@ -124,11 +131,13 @@ def cate(dict_final):
 # method = 'tfidf'
 #          'bm25'
 #          'mix'
-def search_for_detail(raw_query,mode="abstract",method = 'mix'):
+def search_for_detail(raw_query,mode="abstract",method = 'tfidf'):
     query = preprocess_squery(raw_query,mode)
     # ordered list of tuples [(doc_id, score),()]
     if mode == 'abstract':
+        start_time2 = time.time()
         dict_final = rank(raw_query,query,mode,ab,method)
+        print("------------------------% tfidf time----------", time.time() - start_time2)
     elif mode == 'author':
         dict_final = rank(raw_query,query,mode,au,method)
     elif mode == 'title':
@@ -138,13 +147,17 @@ def search_for_detail(raw_query,mode="abstract",method = 'mix'):
     if dict_final == 'None':
         return []
     else:
+        start_time1 = time.time()
         dict_classi = cate(dict_final)
+        print("------------------------% cate time----------", time.time() - start_time1)
         # get all details of all doc_id but not in order
+        start_time3 = time.time()
         for key in dict_classi.keys():
             filepath =  '../../data/' + str(key) + '.json'
             dict_1907 = read(filepath)
             for doc_id_temp in dict_classi[key]:
                 dict_result[doc_id_temp] = dict_1907[doc_id_temp]
+        print("------------------------% search detail time----------", time.time() - start_time3)
         # order the results
         for item in dict_final:
             doc_id_norm = item[0].replace('-','.')
@@ -152,7 +165,4 @@ def search_for_detail(raw_query,mode="abstract",method = 'mix'):
             dict_result_temp["id"] = doc_id_norm
             dict_result_temp['score'] = item[1]
             result_final_all.append(dict_result_temp)
-        # limit the number of documents shown to users
-        if len(result_final_all) > 1000:
-            result_final_all = result_final_all[:1000]
         return result_final_all
