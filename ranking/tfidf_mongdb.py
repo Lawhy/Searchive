@@ -7,6 +7,10 @@ sys.path.append('..')  # append the main directory path
 from search.search_mongo_file import mode_select, preprocess_squery
 from indexing.index_no_pos import read_index_file
 
+ab = read_index_file("..\..\data\\1907index.pk1")
+au = read_index_file("..\..\data\\1907author.pk1")
+ti = read_index_file("..\..\data\\1907title.pk1")
+
 def read(filepath):
     with open(filepath,'r') as f:
         text_1 = f.read()
@@ -19,7 +23,7 @@ def tfidf_score_cal(df,tf):
     return w
 
 def rank(raw_query,query,mode,dictindex):
-    docid_set = mode_select(raw_query,mode,dictindex)
+    docid_set = mode_select(raw_query,mode)
     dict_term = {}
     if docid_set == "None":
         return "None"
@@ -56,9 +60,12 @@ def cate(dict_final):
 def search_for_detail(raw_query,mode="abstract"):
     query = preprocess_squery(raw_query,mode)
     # ordered list of tuples [(doc_id, score),()]
-    dictindex = read_index_file("C:\search-engine-doc\data\\1907index.pk1")
-    print(dictindex)
-    dict_final = rank(raw_query,query,mode,dictindex)
+    if mode == 'abstract':
+        dict_final = rank(raw_query,query,mode,ab)
+    elif mode == 'author':
+        dict_final = rank(raw_query,query,mode,au)
+    elif mode == 'title':
+        dict_final = rank(raw_query,query,mode,ti)
     dict_result = {}
     result_final_all = []
     if dict_final == 'None':

@@ -7,6 +7,10 @@ sys.path.append('..')  # append the main directory path
 from search.search_mongo_file import mode_select, preprocess_squery
 from indexing.index_no_pos import read_index_file
 
+ab = read_index_file("..\..\data\\1907index.pk1")
+au = read_index_file("..\..\data\\1907author.pk1")
+ti = read_index_file("..\..\data\\1907title.pk1")
+
 def read(filepath):
     with open(filepath,'r') as f:
         text_1 = f.read()
@@ -90,7 +94,7 @@ def mix(docid_set,dict_term,mode):
     return weight_score(bm25_result,tfidf_result)
 
 def rank(raw_query,query,mode,dictindex,method):
-    docid_set = mode_select(raw_query,mode,dictindex)
+    docid_set = mode_select(raw_query,mode)
     dict_term = {}
 
     if docid_set == "None":
@@ -103,19 +107,6 @@ def rank(raw_query,query,mode,dictindex,method):
 
         if method == 'tfidf':
             return tfidf(docid_set,dict_term,False)
-            # for docid in docid_set:
-            #     tfidf_score = 0
-            #     for term in dict_term.keys():
-            #         # whether term exists in index
-            #         df = dict_term[term]["df"]
-            #         if docid in dict_term[term].keys():
-            #             tf = dict_term[term][docid]
-            #             tfidf_score += tfidf_score_cal(df,tf)
-            #         else:
-            #             tfidf_score = tfidf_score
-            #     dict_tfidf.append((docid,tfidf_score))
-            # dict_tfidf_sort = sorted(dict_tfidf, key = lambda x:x[1], reverse = True)
-            # return dict_tfidf_sort
         elif method == 'bm25':
             return bm25(docid_set,dict_term,mode,False)
         elif method == 'mix':
@@ -133,11 +124,15 @@ def cate(dict_final):
 # method = 'tfidf'
 #          'bm25'
 #          'mix'
-def search_for_detail(raw_query,mode="abstract",method = 'tfidf'):
+def search_for_detail(raw_query,mode="abstract",method = 'mix'):
     query = preprocess_squery(raw_query,mode)
     # ordered list of tuples [(doc_id, score),()]
-    dictindex = read_index_file("C:\search-engine-doc\data\\1907index.pk1")
-    dict_final = rank(raw_query,query,mode,dictindex,method)
+    if mode == 'abstract':
+        dict_final = rank(raw_query,query,mode,ab,method)
+    elif mode == 'author':
+        dict_final = rank(raw_query,query,mode,au,method)
+    elif mode == 'title':
+        dict_final = rank(raw_query,query,mode,ti,method)
     dict_result = {}
     result_final_all = []
     if dict_final == 'None':
