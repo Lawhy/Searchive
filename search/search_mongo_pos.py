@@ -11,9 +11,9 @@ from indexing.readindex_mongo import read_index
 from indexing.index_no_pos import read_index_file
 '''mongodb--ttds_pos--phrase search, index dict--query search.  index_no_pos and index_mongo_only_pos'''
 
-dictindex_abs = {}
-dictindex_tit = {}
-dictindex_aut = {}
+# dictindex_abs = {}
+# dictindex_tit = {}
+# dictindex_aut = {}
 
 '''      read json file      '''
 def readfile(file_path):
@@ -153,7 +153,7 @@ def phrase_search(search_phrase,mode):
     else:
         return phrase_docid
 
-def mode_select(query,mode):
+def mode_select(query,mode,dictindex_abs,dictindex_tit,dictindex_aut):
     begin_time = time()
     query_docid = None
 
@@ -200,28 +200,19 @@ def mode_select(query,mode):
     run_time = end_time - begin_time
     print('search time', run_time)
     return query_docid
-#
-# def read_index_dict():
-#     time_start = time()
-#     filepath_abs = '../data/abs_dict'
-#     dictindex_abs = read_index_file(filepath_abs)
-#     filepath_tit = '../data/title_dict'
-#     dictindex_tit = read_index_file(filepath_tit)
-#     filepath_aut = '../data/author_dict'
-#     dictindex_aut = read_index_file(filepath_aut)
-#     time_end = time()
-#     print('load time', time_end - time_start)
-#     return
 
-# time_start = time()
-filepath_abs = '../data/abs_dict'
-dictindex_abs = read_index_file(filepath_abs)
-filepath_tit = '../data/title_dict'
-dictindex_tit = read_index_file(filepath_tit)
-filepath_aut = '../data/author_dict'
-dictindex_aut = read_index_file(filepath_aut)
-# time_end = time()
-# print('load time', time_end-time_start)
+def readindexfile():
+
+    time_start = time()
+    filepath_abs = '../data/abs_dict'
+    dictindex_abs = read_index_file(filepath_abs)
+    filepath_tit = '../data/title_dict'
+    dictindex_tit = read_index_file(filepath_tit)
+    filepath_aut = '../data/author_dict'
+    dictindex_aut = read_index_file(filepath_aut)
+    time_end = time()
+    print('load time', time_end-time_start)
+    return
 
 if __name__ == '__main__':
     '''test'''
