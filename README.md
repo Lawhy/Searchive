@@ -9,7 +9,7 @@ e.g. https://arxiv.org/abs/1901.00001 <br>
 * Please use the 'preprocessed' version of data, each file an ordered dict in json format, a data sample is:
 ```r
 # format:
-   ID: {title (str), abstract (str), primary subject (dict), subjects (dict)}
+   ID: {title (str), authors (list(str)), abstract (str), primary subject (dict), subjects (dict)}
 # example:
 {
 "1901.00001": {"title": "some text ...", 
