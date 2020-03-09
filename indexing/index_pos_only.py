@@ -1,7 +1,9 @@
 import json
 import time
 import pickle
-from normalise import Normaliser
+import sys
+sys.path.append('..')
+from preprocess.normalise import Normaliser
 
 abs_pos_dict = {}
 title_pos_dict = {}
@@ -131,13 +133,27 @@ def read_index_file(filepath):
         return dict
 
 
-start_time = time.time()
+# start_time = time.time()
 
-initialise_pos("/Users/AlisonLee/Desktop/1501.json")
-print(abs_pos_dict)
+# initialise_pos("/Users/AlisonLee/Desktop/1501.json")
+# print(abs_pos_dict)
 
-update_pos("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
-print(abs_pos_dict)
+# update_pos("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
+# print(abs_pos_dict)
 
 
-print("--- %s seconds ---" % (time.time() - start_time))
+# print("--- %s seconds ---" % (time.time() - start_time))
+
+if __name__ == "__main__":
+    start_time = time.time()
+    from os import listdir
+    from os.path import isfile, join
+    mypath = "../../data/"
+    datafiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '.json' in f]
+    for datafile in datafiles:
+        initialise_pos(mypath+datafile)
+    write(mypath+"title_pos_dict", title_pos_dict)
+    write(mypath+"author_pos_dict", author_pos_dict)
+    write(mypath+"abs_pos_dict", abs_pos_dict)
+    write(mypath+"param_pos_dict", param_pos_dict)
+    print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,5 +1,7 @@
 import pymongo
-from normalise import Normaliser
+import sys
+sys.path.append('..')
+from preprocess.normalise import Normaliser
 
 import json
 import time
@@ -151,8 +153,16 @@ def update(oldfile, newfile):
 
 
 
-"""customise the data filepath yourself"""
-"""you can write a function to loop over all the files in your data repo"""
-initialise("/Users/AlisonLee/Desktop/1501.json")
-update("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
+# """customise the data filepath yourself"""
+# """you can write a function to loop over all the files in your data repo"""
+# initialise("/Users/AlisonLee/Desktop/1501.json")
+# update("/Users/AlisonLee/Desktop/1501.json", "/Users/AlisonLee/Desktop/1501new.json")
 
+if __name__ == "__main__":
+    start_time = time.time()
+    from os import listdir
+    from os.path import isfile, join
+    mypath = "../../data/"
+    datafiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '.json' in f]
+    for datafile in datafiles:
+        initialise(mypath+datafile)

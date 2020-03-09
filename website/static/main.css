@@ -44,7 +44,7 @@ a.article-title:hover {
 .article-content {
   white-space: pre-line;
   height: 75px;
-  overflow: hidden;
+  overflow: scroll;
   cursor: pointer;
 }
 

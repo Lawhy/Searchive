@@ -1,4 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<ul>
+    <b>Search Mode</b>:
+    
+    <li>General Search: Search Everything</li>
+    <li>Abstract Search: Abstract and Subjects</li>
+    <li>Title Search: Title only</li>
+    <li>Author Search: Author only</li>
+
+    <b>Scoring Method</b>:
+
+    <li>Mix Search: Weight Scores between TFIDF and BM25</li>
+    <li>TFIDF Search: TFIDF only</li>
+    <li>BM25 Search: BM25 only</li>
+</ul>  
+
 {% endblock content %}

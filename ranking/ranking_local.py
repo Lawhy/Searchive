@@ -8,7 +8,7 @@ sys.path.append('..')  # append the main directory path
 from search.search_file import mode_select, preprocess_squery
 
 # -------↓↓ two different read functions were called to read two dict_with_pos and dict_without_pos ↓↓-----------
-from indexing.index_no_pos import read_index_file_no
+# from indexing.index_no_pos import read_index_file_no
 from indexing.index_pos_only import read_index_file
 
 # read dictionaries from the memory
@@ -35,6 +35,11 @@ def read(filepath):
         f.close()
     return text
 
+# read all documents
+filepath = '../../data/merge.json'
+# filepath = '../../data/data/1301.json'
+dict_all = read(filepath)
+
 def tfidf_score_cal(df,tf):
     w = 1 + math.log10(float(tf)) * math.log10(5000/float(df))
     return w
@@ -45,10 +50,12 @@ def bm25_score_cal(dict_param,df,tf,mode):
     no_doc = dict_param["dno"]
     if mode == "abstract":
         len_doc = dict_param["abl"]
-    elif mode == "authors":
+    elif mode == "author":
         len_doc = dict_param["aul"]
     elif mode == "title":
         len_doc = dict_param["til"]
+    elif mode == "general":
+        len_doc = dict_param["abl"] + dict_param["aul"] + dict_param["til"]
 
     avg_doc = float(len_doc/no_doc)
     idf = math.log((no_doc-float(df)+0.5)/(float(df)+0.5),10)
@@ -71,6 +78,8 @@ def weight_score(bm25,tfidf):
 
 def tfidf(docid_set,dict_term,mix):
     dict_tfidf = []
+    if not docid_set:
+        return dict_tfidf
     for docid in docid_set:
         tfidf_score = 0
         for term in dict_term.keys():
@@ -97,6 +106,8 @@ def tfidf(docid_set,dict_term,mix):
 def bm25(docid_set,dict_term,mode,mix):
     dict_param = read_index_file("../../data/param_dict")
     dict_bm25 = []
+    if not docid_set:
+        return dict_bm25
     for docid in docid_set:
         bm25_score = 0
         for term in dict_term.keys():
@@ -146,7 +157,7 @@ def rank(raw_query,query,mode,method):
                 dictindex = ti
             elif mode == 'author':
                 dictindex = au
-            if dictindex[term] != None:
+            if term in dictindex.keys():
                 dict_term[term] = dictindex[term]
 
         if method == 'tfidf':
@@ -171,6 +182,8 @@ def rank(raw_query,query,mode,method):
 def search_for_detail(raw_query,mode="abstract",method = 'tfidf'):
     query = preprocess_squery(raw_query,mode)
     # ordered list of tuples [(doc_id, score),()]
+    print('mode',mode)
+    print('method',method)
     if mode == 'abstract':
         start_time2 = time.time()
         dict_final = rank(raw_query,query,mode,method)
@@ -183,7 +196,7 @@ def search_for_detail(raw_query,mode="abstract",method = 'tfidf'):
         dict_final = rank(raw_query,query,mode,method)
     dict_result = {}
     result_final_all = []
-    if dict_final == 'None':
+    if dict_final == 'None' or not dict_final:
         return []
     else:
         # start_time1 = time.time()
@@ -198,9 +211,6 @@ def search_for_detail(raw_query,mode="abstract",method = 'tfidf'):
         #         dict_result[doc_id_temp] = dict_1907[doc_id_temp]
         # print("------------------------% search detail time----------", time.time() - start_time3)
         start_time1 = time.time()
-        filepath = '../../data/merge.json'
-        # filepath = '../../data/data/1301.json'
-        dict_all = read(filepath)
         print("------------------------% read time----------", time.time() - start_time1)
         # order the results
         # dict_final : [(id,score),(id,score),...]

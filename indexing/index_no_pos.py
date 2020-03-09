@@ -208,9 +208,7 @@ if __name__ == "__main__":
     # write(mypath+"abs_dict", abs_dict)
     # write(mypath+"param_dict", param_dict)
     # print("--- %s seconds ---" % (time.time() - start_time))
-    read_index_file(mypath+"title_dict")
-    read_index_file(mypath+"author_dict")
-    read_index_file(mypath+"abs_dict")
-    read_index_file(mypath+"param_dict")
-    while(True):
-        pass
+    # read_index_file(mypath+"title_dict")
+    # read_index_file(mypath+"author_dict")
+    # read_index_file(mypath+"abs_dict")
+    # read_index_file(mypath+"param_dict")

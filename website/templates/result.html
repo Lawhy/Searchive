@@ -2,14 +2,37 @@
 {% block content %}
 <div class="col-md-8">
   <form action="/result?q=">
-    <input type="text" name="q" style="width: 75%;" value="{{query}}">
-    <input type="submit" value="Search" style="float:right;">
-  </form>
+    <input type="text" name="q" style="width: 75%;" value="{{query}}" class="form-control form-rounded">
+    <input type="submit" value="Search" style="float:right;" class="btn btn-outline-secondary">
+  
+  Select mode: <input type="radio" id="general" name="mode" value="general" {% if mode == 'general' %} checked {% endif %}>
+    <label for="general">general</label>
+    <input type="radio" id="abstract" name="mode" value="abstract" {% if mode == 'abstract' %} checked {% endif %}>
+    <label for="male">abstract</label>
+    <input type="radio" id="title" name="mode" value="title" {% if mode == 'title' %} checked {% endif %}>
+    <label for="title">title</label>
+    <input type="radio" id="author" name="mode" value="author" {% if mode == 'author' %} checked {% endif %}>
+    <label for="author">author</label>
   <br>
+  Select method: <input type="radio" id="mix" name="method" value="mix" {% if method == 'mix' %} checked {% endif %}>
+      <label for="mix">mix</label>
+      <input type="radio" id="tfidf" name="method" value="tfidf" {% if method == 'tfidf' %} checked {% endif %}>
+      <label for="tfidf">tfidf</label>
+      <input type="radio" id="bm25" name="method" value="bm25" {% if method == 'bm25' %} checked {% endif %}>
+      <label for="bm25">bm25</label>
+  <br>
+  Sorted by: <input type="radio" id="Relevance" name="sort" value="Relevance" {% if sort == 'Relevance' %} checked {% endif %}>
+      <label for="relevance">relevance</label>
+      <input type="radio" id="Newest to Oldest" name="sort" value="NtO" {% if sort == 'NtO' %} checked {% endif %}>
+      <label for="Newest to Oldest">Newest to Oldest</label>
+      <input type="radio" id="Oldest to Newest" name="sort" value="OtN" {% if sort == 'OtN' %} checked {% endif %}>
+      <label for="Oldest to Newest">Oldest to Newest</label>
+  <br>
+  </form>
   {% if correction %}
-    <a>Showing results for <a href="/result?q={{correction}}">{{correction}}</a></a>
+    <a>Showing results for <a href="/result?q={{correction}}&mode={{mode}}&method={{method}}&sort={{sort}}">{{correction}}</a></a>
     <br>
-    <small>Search instead for <a href="/result?q={{query}}&correctionFlag=1}">{{query}}</small>
+    <small>Search instead for <a href="/result?q={{query}}&correctionFlag=1&mode={{mode}}&method={{method}}&sort={{sort}}">{{query}}</small>
     <br>
   {% endif %}
   {% if startIndex + numberOfResultsPerPage <= numberOfResults %}
@@ -21,10 +44,10 @@
     <table style="float:right;">
       <tr>
         <th>Show</th>
-        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{10}}">10</a></th>
-        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{20}}">20</a></th>
-        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{50}}">50</a></th>
-        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{100}}">100</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{10}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}">10</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{20}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}">20</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{50}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}">50</a></th>
+        <th><a class="text-muted" style="float:right;" href="?q={{query}}&si=0&rpp={{100}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}">100</a></th>
       </tr>
     </table>
   </small>
@@ -33,9 +56,9 @@
         <div class="media-body">
           <div class="article-metadata">
             {% for author in result.authors %}
-            <a class="mr-2" href="#">{{author}}</a>
+            <a class="mr-2" href="?q={{author}}&correctionFlag=1&mode=author">{{author}}</a>
             {% endfor %}
-            <!-- <small class="text-muted" style="float:right;">{{ datetime.datetime.strptime(result.id.split('.')[0],'%y%m').strftime("%Y %b") }}</small> -->
+            <small class="text-muted" style="float:right;">{{ datetime.datetime.strptime(result.id.split('.')[0],'%y%m').strftime("%Y %b") }}</small>
           </div>
           <h2><a class="article-title" href="https://arxiv.org/pdf/{{ result.id }}.pdf">{{ result.title }}</a></h2>
           {% for abbr,subject in result.subjs.items() %}
@@ -60,7 +83,7 @@
       <tr>
         {% if startIndex == 0 %}
         {% else %}
-        <th><a href="?q={{query}}&si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="previous">&laquo; Previous</a></th>
+        <th><a href="?q={{query}}&si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}" class="previous">&laquo; Previous</a></th>
         {% endif %}
         <!-- <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">1</a></th>
         <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">2</a></th>
@@ -68,7 +91,7 @@
         <th><a href="?si={{startIndex - numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}">4</a></th> -->
         {% if startIndex >= (numberOfResults - numberOfResultsPerPage) %}
         {% else %}
-        <th><a href="?q={{query}}&si={{startIndex + numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}" class="next" style="float:right;">Next &raquo;</a></th>
+        <th><a href="?q={{query}}&si={{startIndex + numberOfResultsPerPage}}&rpp={{numberOfResultsPerPage}}&mode={{mode}}&method={{method}}&sort={{sort}}&correctionFlag={{correctionFlag}}" class="next" style="float:right;">Next &raquo;</a></th>
         {% endif %}
       </tr>
     </table>
@@ -79,14 +102,19 @@
 {% block sidebar %}
 <div class="col-md-4">
   <div class="content-section">
-    <h3>Results Filter</h3>
-      <ul class="list-group">
-        <li class="list-group-item list-group-item-light">Latest to Oldest</li>
-        <li class="list-group-item list-group-item-light">Oldest to Latest</li>
-        <li class="list-group-item list-group-item-light">By Authors</li>
-        <li class="list-group-item list-group-item-light">Alphabetical</li>
-      </ul>
+    <h3>Search Tips:</h3>
     </p>
+    <ul>
+      <li>Recent searches are cached for speed.</li>
+      <li>Auto-correction is disabled when searching authors.</li>
+      <li>Click on any author's name to find all his/her publications.</li>
+      <li>Use " " to perform phrase search.</li>
+    </ul>
+    <h3>Fun Facts:</h3>
+    <ul>
+      <li>We recorded over 1 million papers.</li>
+      <li>Papers are from 8 subjects and dozens of sub-fields.</li>
+    </ul> 
   </div>
 </div>
 {% endblock sidebar %}
