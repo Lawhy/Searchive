@@ -1,4 +1,4 @@
-# search-engine
+# Searchive
 TTDS coursework 3 
 
 1. Data 
