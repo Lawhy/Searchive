@@ -2,7 +2,7 @@
 TTDS coursework 3 
 
 1. Data 
-Link to data: https://drive.google.com/open?id=1T8EJ3_5EpNiGH5ggbPhZrLmPMzOMqtMe <br>
+Link to data: ... <br>
 Link to glove embeddings: http://nlp.stanford.edu/data/glove.6B.zip <br>
 URL format to papers: https://arxiv.org/abs/{ID} <br>
 e.g. https://arxiv.org/abs/1901.00001 <br>
