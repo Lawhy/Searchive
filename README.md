@@ -1,5 +1,5 @@
 # Searchive
-TTDS coursework 3 
+TTDS coursework 3:
 
 1. Data 
 Link to data: ... <br>
@@ -66,3 +66,30 @@ use python to operate on your local mongodb: https://api.mongodb.com/python/curr
 
 ### merge.json
 Link of data: https://drive.google.com/open?id=1szTszClFYDPWeUX9P_NizAKVXhG7UffM
+
+### Final Feedback:
+Group ID: 2 <br><br>
+
+Number of students: 5 <br><br>
+
+Positive: <br><br>
+
+- Nice and clear report <br><br>
+
+- The idea is very interesting <br><br>
+
+- Having evaluation section <br><br>
+
+Negative: <br><br>
+
+Comments: <br><br>
+
+Excellent work. <br><br>
+
+There are other features that could be added such as author suggestion in the query. <br><br>
+
+It might be useful to cinsider graphical explanation for the implemented system (i.e. to show the different modules and how they interact with each other. <br><br>
+
+Well done! <br><br>
+
+Overall group mark (15): 13 <br>
